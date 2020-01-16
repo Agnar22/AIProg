@@ -5,7 +5,7 @@ import json
 class Hexagonal:
     def __init__(self):
         # self.neighbours = [(-1, -1), (-1, 0), (0, -1), (0, 1), (1, 0), (1, 1)]
-        self.neghbours = [(-1, 0), (-1, 1), (1, -1), (0, 1), (1, -1), (1, 0)]
+        self.neighbours = [(-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0)]
         self.data = {}
         with open('../PivotalParameters.json') as json_file:
             self.data = json.load(json_file)
@@ -35,8 +35,6 @@ class Hexagonal:
                 board[y, x] = num + 1 if board[y, x] != -1 else -1
         return board
 
-
-
     def __str__(self):
         """
 
@@ -55,6 +53,7 @@ class Hexagonal:
                     board_str += str(self.board[y - x, x]) + " "
             board_str += "\n"
         return board_str
+
 
 
 if __name__ == '__main__':

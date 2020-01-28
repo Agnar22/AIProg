@@ -1,11 +1,15 @@
 import numpy as np
-import Hexagonal
+import ast
+from Board import Hexagonal
 
 
 class PegSolitaire(Hexagonal.Hexagonal):
 
     def __init__(self):
         Hexagonal.Hexagonal.__init__(self)
+
+    def get_state(self):
+        return str(self.board)
 
     def get_legal_moves(self):
         """
@@ -23,7 +27,8 @@ class PegSolitaire(Hexagonal.Hexagonal):
                 if not (self._legal_pos(n_neighbour) and self._legal_pos(nn_neighbour)):
                     continue
                 if self.board[n_neighbour] == self.board[ix, iy] == 1 and self.board[nn_neighbour] == 0:
-                    legal_moves.append([(ix, iy), nn_neighbour])
+                    legal_moves.append(str([(ix, iy), nn_neighbour]))
+        # print(legal_moves)
         return legal_moves
 
     def _legal_pos(self, pos):
@@ -44,24 +49,28 @@ class PegSolitaire(Hexagonal.Hexagonal):
         if move not in self.get_legal_moves():
             print(move, "is not a legal move!")
             return -1
+        print("executed", move)
+        move = ast.literal_eval(move)
 
         middle = tuple(np.add(move[0], tuple(np.subtract(move[1], move[0]) // 2)))
         self.board[move[0]] = 0
         self.board[middle] = 0
         self.board[move[1]] = 1
+        return self.get_state(), self.outcome() if self.is_finished() else 0
 
     def is_finished(self):
-        pass
+        return len(self.get_legal_moves()) == 0
 
     def outcome(self):
         """
 
         :return:
         """
-        pass
+
+        return 1 if np.sum(self.board == 1) == 1 else -1
 
     def reset(self):
-        pass
+        Hexagonal.Hexagonal.__init__(self)
 
     def print_board(self):
         to_replace = [("0", "\u25cb"), ("1", "\u2b24")]

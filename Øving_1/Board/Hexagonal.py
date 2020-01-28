@@ -7,7 +7,7 @@ class Hexagonal:
         # self.neighbours = [(-1, -1), (-1, 0), (0, -1), (0, 1), (1, 0), (1, 1)]
         self.neighbours = [(-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0)]
         self.data = {}
-        with open('../PivotalParameters.json') as json_file:
+        with open('PivotalParameters.json') as json_file:
             self.data = json.load(json_file)
         self.board = self._create_board(self.data['board_type'], self.data['board_size'], self.data['cell_types'])
 

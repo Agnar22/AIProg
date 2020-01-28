@@ -24,15 +24,15 @@ class Hexagonal:
         board = np.array([])
         if board_type == 'triangle':
             # board = np.array([[0 if x <= y else -1 for x in range(dimensions)] for y in range(dimensions)])
-            board = np.array([[0 if x < dimensions - y else -1 for x in range(dimensions)] for y in range(dimensions)])
+            board = np.array([[1 if x < dimensions - y else -1 for x in range(dimensions)] for y in range(dimensions)])
         elif board_type == 'diamond':
             # board = np.array(
             #     [[0 if (x <= y and y < dimensions) or (x <= 2 * dimensions - y - 2 and y >= dimensions) else -1 for x in
             #       range(dimensions)] for y in range(2 * dimensions - 1)])
-            board = np.array([[0] * dimensions] * dimensions)
+            board = np.array([[1] * dimensions] * dimensions)
         for num, cell_type in enumerate(cell_types):
             for y, x in cell_type:
-                board[y, x] = num + 1 if board[y, x] != -1 else -1
+                board[y, x] = num if board[y, x] != -1 else -1
         return board
 
     def __str__(self):

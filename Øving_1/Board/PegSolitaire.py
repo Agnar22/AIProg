@@ -49,7 +49,7 @@ class PegSolitaire(Hexagonal.Hexagonal):
         if move not in self.get_legal_moves():
             print(move, "is not a legal move!")
             return -1
-        print("executed", move)
+        # print("executed", move)
         move = ast.literal_eval(move)
 
         middle = tuple(np.add(move[0], tuple(np.subtract(move[1], move[0]) // 2)))

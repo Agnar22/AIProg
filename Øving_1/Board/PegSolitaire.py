@@ -50,11 +50,17 @@ class PegSolitaire(Hexagonal.Hexagonal):
         self.board[middle] = 0
         self.board[move[1]] = 1
 
+    def is_finished(self):
+        pass
+
     def outcome(self):
         """
 
         :return:
         """
+        pass
+
+    def reset(self):
         pass
 
     def print_board(self):

@@ -1,5 +1,5 @@
-import Actor
-import Critic
+from ActorCritic import Actor
+from ActorCritic import Critic
 
 
 class ActorCritic:
@@ -13,24 +13,25 @@ class ActorCritic:
         actor = Actor.Actor(0.01)
         # For each episode
         for episode in range(episodes):
+            print("new episode")
             # init s and a
             # TODO: epsilon greedy
             self.game.reset()
             curr_state = self.game.get_state()
-            curr_action = actor.get_best_action(curr_state, self.game.get_legal_moves())
+            curr_action = actor.get_action(curr_state, self.game.get_legal_moves(), 0.01)
             curr_episode = []
             # for each step in episode
             while not self.game.is_finished():
                 # do action a in state s, receive reinforcement r
                 next_state, reward = self.game.execute_move(curr_action)
                 # a':= next action dedicated by policy
-                next_action = actor.get_best_action(next_state, self.game.get_legal_moves())
+                next_action = actor.get_action(next_state, self.game.get_legal_moves(), 0.01)
                 # e(s',a') = 1 for actor
                 actor.update_state_action_value(next_state, next_action, 1)
                 # critic - temporal difference
                 td_error = critic.compute_td_error(curr_state, next_state, reward, discount_factor)
                 # e(s') = 1 for critic TODO: s or s'?
-                critic.set_eligibility(1)
+                critic.set_eligibility(curr_state, 1)
                 curr_episode.append((curr_state, curr_action, td_error))
                 # for each state and action in current episode
                 for state, action, td_error in curr_episode:
@@ -46,4 +47,3 @@ class ActorCritic:
                 curr_state = next_state
                 # a:=a'
                 curr_action = next_action
-

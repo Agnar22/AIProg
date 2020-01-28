@@ -66,8 +66,10 @@ class PegSolitaire(Hexagonal.Hexagonal):
 
         :return:
         """
-
+        if np.sum(self.board == 1) == 1:
+            print("Won!")
         return 1 if np.sum(self.board == 1) == 1 else -1
+        # return 1 if np.sum(self.board == 1) == 1 else -np.sum(self.board == 1) / 10
 
     def reset(self):
         Hexagonal.Hexagonal.__init__(self)

@@ -9,7 +9,7 @@ class Actor:
         self.lr = learning_rate
 
     def get_action(self, state, legal_actions, epsilon):
-        if len(legal_actions)==0:
+        if len(legal_actions) == 0:
             return None
         if np.random.uniform() < epsilon:
             return legal_actions[np.random.randint(0, len(legal_actions))]
@@ -20,6 +20,7 @@ class Actor:
 
     def set_eligibility(self, state, action, eligibility):
         self.sa_eligibilities.setdefault(state, {})[action] = eligibility
+        # print("elegibility", self.sa_eligibilities[state][action], eligibility)
 
     def get_eligibility(self, state, action):
         return self.sa_eligibilities.setdefault(state, {}).setdefault(action, 0)
@@ -27,3 +28,4 @@ class Actor:
     def update_state_action_value(self, state, action, td_error):
         sa_value = self.sa_values.setdefault(state, {}).setdefault(action, 0)
         self.sa_values[state][action] = sa_value + self.lr * self.get_eligibility(state, action) * td_error
+        # print("New action value", self.sa_values[state][action], self.lr, self.get_eligibility(state, action), td_error)

@@ -7,27 +7,29 @@ class ActorCritic:
         self.game = game
 
     def train(self, episodes, discount_factor):
+        episode_lengths = []
+        epsilon = 0.8
+        epsilon_decay = 0.9995
         # Init critic
-        critic = Critic.Critic(0.01)
+        critic = Critic.Critic(0.06)
         # Init actor
-        actor = Actor.Actor(0.01)
+        actor = Actor.Actor(0.06)
         # For each episode
         for episode in range(episodes):
             print("new episode")
             # init s and a
-            # TODO: epsilon greedy
             self.game.reset()
             curr_state = self.game.get_state()
-            curr_action = actor.get_action(curr_state, self.game.get_legal_moves(), 0.01)
+            curr_action = actor.get_action(curr_state, self.game.get_legal_moves(), epsilon)
             curr_episode = []
             # for each step in episode
             while not self.game.is_finished():
                 # do action a in state s, receive reinforcement r
                 next_state, reward = self.game.execute_move(curr_action)
                 # a':= next action dedicated by policy
-                next_action = actor.get_action(next_state, self.game.get_legal_moves(), 0.01)
+                next_action = actor.get_action(next_state, self.game.get_legal_moves(), epsilon)
                 # e(s',a') = 1 for actor
-                actor.update_state_action_value(next_state, next_action, 1)
+                actor.set_eligibility(curr_state, curr_action, 1)
                 # critic - temporal difference
                 td_error = critic.compute_td_error(curr_state, next_state, reward, discount_factor)
                 # e(s') = 1 for critic TODO: s or s'?
@@ -47,3 +49,8 @@ class ActorCritic:
                 curr_state = next_state
                 # a:=a'
                 curr_action = next_action
+            epsilon *= epsilon_decay
+            print(episode, len(curr_episode), epsilon)
+            episode_lengths.append(len(curr_episode))
+        print(actor.sa_values.values())
+        return episode_lengths

@@ -11,9 +11,11 @@ class Critic:
     def compute_td_error(self, from_state, to_state, reward, discount_factor):
         # print(self.state_values.setdefault(from_state, np.random.uniform(-0.1, 0.1)))
         # print(self.state_values.setdefault(to_state, np.random.uniform(-0.1, 0.1)))
-        # print(reward, discount_factor)
-        return reward + discount_factor * self.state_values.setdefault(to_state, np.random.uniform(-0.1, 0.1)) \
+        #print(reward, - self.state_values.setdefault(from_state, np.random.uniform(-0.01, 0.01)))
+        comp= reward + discount_factor * self.state_values.setdefault(to_state, np.random.uniform(-0.01, 0.01)) \
                - self.state_values.setdefault(from_state, np.random.uniform(-0.01, 0.01))
+        #print("comp", comp)
+        return comp
 
     def set_eligibility(self, state, eligibility):
         self.state_eligibilities[state] = eligibility

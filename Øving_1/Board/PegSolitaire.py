@@ -7,6 +7,7 @@ class PegSolitaire(Hexagonal.Hexagonal):
 
     def __init__(self):
         Hexagonal.Hexagonal.__init__(self)
+        self.history=[]
 
     def get_state(self):
         return str(self.board)
@@ -51,12 +52,16 @@ class PegSolitaire(Hexagonal.Hexagonal):
             return -1
         # print("executed", move)
         move = ast.literal_eval(move)
+        self.history.append(np.array(self.board))
 
         middle = tuple(np.add(move[0], tuple(np.subtract(move[1], move[0]) // 2)))
         self.board[move[0]] = 0
         self.board[middle] = 0
         self.board[move[1]] = 1
         return self.get_state(), self.outcome() if self.is_finished() else 0
+
+    def undo_move(self):
+        self.board=self.history.pop(-1)
 
     def is_finished(self):
         return len(self.get_legal_moves()) == 0
@@ -69,7 +74,8 @@ class PegSolitaire(Hexagonal.Hexagonal):
         if np.sum(self.board == 1) == 1:
             print("Won!")
         return 1 if np.sum(self.board == 1) == 1 else -1
-        # return 1 if np.sum(self.board == 1) == 1 else -np.sum(self.board == 1) / 10
+        # return 1 if np.sum(self.board == 1) == 1 else -np.sum(self.board == 1) / 5
+        # return 1 - np.sum(self.board == 1)**2 / 10
 
     def reset(self):
         Hexagonal.Hexagonal.__init__(self)

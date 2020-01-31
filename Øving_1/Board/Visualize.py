@@ -17,12 +17,14 @@ def matrix_to_points(board, distance, reference):
 
 
 def draw(board, triangle=False, distance=50, diameter=15, last_move=''):
-    screen_size = (50 + 100 * board.shape[0], 50 + 100 * board.shape[1])
-    screen = pygame.display.set_mode(screen_size)
+    screen_width = 150 + distance * board.shape[0]
+    screen_height = int(150 + math.cos(math.pi / 12) * distance * (board.shape[1] - 1) * 2)
+    screen = pygame.display.set_mode((screen_width, screen_height))
     screen.fill((125, 159, 115))
 
-    div = 3 if triangle else 6
-    positions = matrix_to_points(board, distance, (screen_size[0] / 2, screen_size[1] / div))
+    y_pos = 75 + math.cos(math.pi / 12) * distance * (board.shape[1] - 1) / 2 if triangle else 75
+    positions = matrix_to_points(board, distance, (screen_width / 2, y_pos))
+
     for x, y in np.ndindex(board.shape):
         if triangle and x + y >= board.shape[0]: continue
 
@@ -30,7 +32,6 @@ def draw(board, triangle=False, distance=50, diameter=15, last_move=''):
         size = diameter if board[x, y] == 1 else int(diameter / 1.5)
         if "({0}, {1})".format(x, y) in last_move:
             size = int(size * 1.3)
-        print(x, y, "({0}, {1})".format(x, y) in last_move)
         pxl_x = positions[x, y, 0]
         pxl_y = positions[x, y, 1]
         pygame.draw.circle(screen, colour, (pxl_x, pxl_y), size)

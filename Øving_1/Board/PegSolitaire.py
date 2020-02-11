@@ -7,10 +7,10 @@ class PegSolitaire(Hexagonal.Hexagonal):
 
     def __init__(self):
         Hexagonal.Hexagonal.__init__(self)
-        self.history=[]
+        self.history = []
 
     def get_state(self):
-        return str(self.board)
+        return (str(self.board), self.board)
 
     def get_legal_moves(self):
         """
@@ -61,7 +61,7 @@ class PegSolitaire(Hexagonal.Hexagonal):
         return self.get_state(), self.outcome() if self.is_finished() else 0
 
     def undo_move(self):
-        self.board=self.history.pop(-1)
+        self.board = self.history.pop(-1)
 
     def is_finished(self):
         return len(self.get_legal_moves()) == 0

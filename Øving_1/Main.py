@@ -19,7 +19,7 @@ def dfs(game):
     num_visited = 0
     leg_moves = game.get_legal_moves()
     branching_sum[0] += len(leg_moves)
-    if len(leg_moves)>10:
+    if len(leg_moves) > 10:
         print(len(leg_moves))
         print(leg_moves)
         game.print_board()
@@ -35,27 +35,33 @@ def dfs(game):
 if __name__ == '__main__':
     from Board import PegSolitaire, Visualize
     from ActorCritic import Main as ActorCritic
+    from ActorCritic import Actor, Critic, CriticModules
 
     # game = PegSolitaire.PegSolitaire()
     # moves = game.get_legal_moves()
     # game.execute_move(moves[0])
     # Visualize.draw(game.board, triangle=False, last_move=moves[0])
     #
-    # input()
     game = PegSolitaire.PegSolitaire()
     game.print_board()
-    print(dfs(game))
-    print(branching_sum)
-    print(depth_sum)
-    print(len(visited))
+    # print(dfs(game))
+    # print(branching_sum)
+    # print(depth_sum)
+    # print(len(visited))
     #
-    # for _ in range(1):
-    #     game = PegSolitaire.PegSolitaire()
-    #     print(game)
-    #     AC = ActorCritic.ActorCritic(game)
-    #     scores = AC.train(2000, 0.99)
-    #
-    #     # plt.close('all')
-    #     plt.plot(list(range(len(scores))), scores)
-    #     plt.legend()
-    #     plt.show()
+    for _ in range(1):
+        game = PegSolitaire.PegSolitaire()
+        actor = Actor.Actor(0.06)
+        # NN = CriticModules.Net(0.01)
+        # critic_module = CriticModules.NNApproximator(NN)
+        table = CriticModules.Table(0.06)
+        critic = Critic.Critic(0.01, table)
+
+        print(game)
+        AC = ActorCritic.ActorCritic(game, actor, critic)
+        scores = AC.train(2000, 0.99)
+
+        # plt.close('all')
+        plt.plot(list(range(len(scores))), scores)
+        plt.legend()
+        plt.show()

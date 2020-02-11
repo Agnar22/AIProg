@@ -1,27 +1,90 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
+import numpy as np
+import torch
+from torch.utils import data
 
 
 class Table:
-    def __init__(self):
+    def __init__(self, lr):
         self.state_values = dict()
+        self.lr = lr
+        self.state_elig = dict()
+
+    def reset(self):
+        self.state_values = dict()
+        self.state_elig = dict()
+
+    def set_eligibility(self, state, eligibility):
+        self.state_elig[state[0]] = eligibility
+
+    def get_eligibility(self, state):
+        return self.state_elig[state[0]]
 
     def predict(self, state):
-        return self.state_values.setdefault(state, np.random.uniform(-0.01, 0.01))
+        return self.state_values.setdefault(state[0], np.random.uniform(-0.01, 0.01))
+
+    def fit(self, state, td_error):
+        self.state_values[state[0]] = self.state_values[state[0]] + self.lr * self.state_elig[state[0]] * td_error
 
 
 class NNApproximator:
     def __init__(self, NN):
         self.NN = NN
+        self.criterion = nn.MSELoss()
+        self.optimizer = optim.SGD(NN.parameters(), lr=0.01, momentum=0.0)
+        self.elig = [
+            torch.Tensor(np.zeros((100, 2))), torch.Tensor(np.zeros((100))),
+            torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
+            torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
+            torch.Tensor(np.zeros((1, 100))), torch.Tensor(np.zeros((1)))
+        ]
+        self.elig_decay = 0.5
+
+    def reset(self):
+        self.elig = [
+            torch.Tensor(np.zeros((100, 25))), torch.Tensor(np.zeros((100))),
+            torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
+            torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
+            torch.Tensor(np.zeros((1, 100))), torch.Tensor(np.zeros((1)))
+        ]
+
+    def set_eligibility(self, state, eligibility):
+        pass
+
+    def get_eligibility(self, state):
+        return -1
 
     def predict(self, x):
-        return self.NN(torch.Tensor(x))
+        return self.NN(torch.Tensor(x[1].flatten()))
+
+    def fit(self, state, td_error):
+        """
+
+        @param state:
+        @param td_error:
+        @return:
+        """
+
+        self.optimizer.zero_grad()
+
+        outputs = self.NN(torch.Tensor(state[1].flatten()))
+        loss = self.criterion(outputs, outputs + td_error)
+        loss.backward(retain_graph=True)
+        for num, f in enumerate(self.NN.parameters()):
+            self.elig[num] = self.elig[num] + f.grad * ((2 * float(td_error)) ** (-1))
+            f.grad = float(td_error) * self.elig[num]
+            self.elig[num] = self.elig_decay * self.elig[num]
+        self.optimizer.step()
+
+        # print("epoch: {0}, running_loss: {1:.3f}".format(0, loss.item()))
 
 
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(2, 100)
+        self.fc1 = nn.Linear(25, 100)
         self.fc2 = nn.Linear(100, 100)
         self.fc3 = nn.Linear(100, 100)
         self.fc4 = nn.Linear(100, 1)
@@ -35,13 +98,7 @@ class Net(nn.Module):
 
 
 if __name__ == '__main__':
-    import torch.optim as optim
-    import numpy as np
-    import torch
-    from torch.utils import data
-
     net = Net()
-    # net.predict([np.array([1, 0])])
 
     criterion = nn.MSELoss()
     optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.0)

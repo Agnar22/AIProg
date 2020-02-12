@@ -33,14 +33,14 @@ class NNApproximator:
     def __init__(self, NN):
         self.NN = NN
         self.criterion = nn.MSELoss()
-        self.optimizer = optim.SGD(NN.parameters(), lr=0.01, momentum=0.0)
+        self.optimizer = optim.SGD(NN.parameters(), lr=0.1, momentum=0.0)
         self.elig = [
             torch.Tensor(np.zeros((100, 2))), torch.Tensor(np.zeros((100))),
             torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
             torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
             torch.Tensor(np.zeros((1, 100))), torch.Tensor(np.zeros((1)))
         ]
-        self.elig_decay = 0.5
+        self.elig_decay = 0.9
 
     def reset(self):
         self.elig = [
@@ -57,7 +57,9 @@ class NNApproximator:
         return -1
 
     def predict(self, x):
-        return self.NN(torch.Tensor(x[1].flatten()))
+        ans = self.NN(torch.Tensor(x[1].flatten()))
+        print(ans)
+        return ans
 
     def fit(self, state, td_error):
         """

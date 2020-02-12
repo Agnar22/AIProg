@@ -17,7 +17,7 @@ class ActorCritic:
         self.actor.reset()
         # For each episode
         for episode in range(episodes):
-            print("new episode")
+            print("new episode", episode)
             self.run_episode(epsilon, discount_factor, elig_actor, elig_critic, episode_lengths)
             epsilon *= epsilon_decay
         return episode_lengths
@@ -32,7 +32,6 @@ class ActorCritic:
         while not self.game.is_finished():
             # do action a in state s, receive reinforcement r
             next_state, reward = self.game.execute_move(curr_action)
-            # print(reward)
             # a':= next action dedicated by policy
             next_action = self.actor.get_action(next_state, self.game.get_legal_moves(), epsilon)
             # e(s,a) = 1 for actor

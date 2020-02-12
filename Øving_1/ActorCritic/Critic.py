@@ -10,10 +10,10 @@ class Critic:
     def compute_td_error(self, from_state, to_state, reward, discount_factor, finished=False):
         # target_value = reward + discount_factor * self.state_values.setdefault(to_state, np.random.uniform(-0.01, 0.01))
         current_value = self.value_approximator.predict(from_state)
-        if finished:
-            print("Last", reward, current_value, reward - current_value)
-            return reward - current_value
+        # if finished:
 
+        #     print("Last", reward, current_value, reward - current_value)
+        #     return reward - current_value
         target_value = reward + discount_factor * self.value_approximator.predict(to_state)
         # current_value = self.state_values.setdefault(from_state, np.random.uniform(-0.01, 0.01))
         td_error = target_value - current_value

@@ -5,8 +5,8 @@ from Board import Hexagonal
 
 class PegSolitaire(Hexagonal.Hexagonal):
 
-    def __init__(self):
-        Hexagonal.Hexagonal.__init__(self)
+    def __init__(self, board_type, board_size, cell_types):
+        Hexagonal.Hexagonal.__init__(self, board_type, board_size, cell_types)
         self.history = []
 
     def get_state(self):

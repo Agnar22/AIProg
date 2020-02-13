@@ -4,12 +4,15 @@
   "cell_types": [[[1, 1]]],
   "num_episodes": 1,
   "critic_mode": "NN",
-  "network_structure": [10, 10, 4],
+  "network_structure": [10, 10, 1],
   "lr_actor": 0.3,
   "lr_critic": 0.4,
-  "disc_actor": 0.9,
-  "disc_critic": 0.9,
-  "epsilon": 0.3,
-  "display": false,
-  "delay": 10
+  "elig_decay_actor": 0.99,
+  "elig_decay_critic": 0.99,
+  "disc_actor": 0.99,
+  "disc_critic": 0.99,
+  "epsilon": 0.8,
+  "epsilon_decay": 0.997,
+  "display_time": 2000,
+  "delay": 1.5
 }

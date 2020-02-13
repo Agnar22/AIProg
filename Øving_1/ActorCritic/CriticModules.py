@@ -74,6 +74,8 @@ class NNApproximator:
         outputs = self.NN(torch.Tensor(state[1].flatten()))
         loss = self.criterion(outputs, outputs + td_error)
         loss.backward(retain_graph=True)
+
+        # Update weights with eligibility
         for num, f in enumerate(self.NN.parameters()):
             self.elig[num] = self.elig[num] + f.grad * ((2 * float(td_error)) ** (-1))
             f.grad = float(td_error) * self.elig[num]
@@ -84,18 +86,23 @@ class NNApproximator:
 
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, architectrue):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(25, 100)
-        self.fc2 = nn.Linear(100, 100)
-        self.fc3 = nn.Linear(100, 100)
-        self.fc4 = nn.Linear(100, 1)
+        self.weights = []
+        for num, val in enumerate(architectrue, 1):
+            self.weights.append(nn.Linear(architectrue[num - 1], val))
+        # self.fc1 = nn.Linear(25, 100)
+        # self.fc2 = nn.Linear(100, 100)
+        # self.fc3 = nn.Linear(100, 100)
+        # self.fc4 = nn.Linear(100, 1)
 
     def forward(self, x):
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        x = F.sigmoid(self.fc4(x))
+        for layer in self.weights:
+            x = F.relu(layer(x))
+        # x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        # x = F.relu(self.fc3(x))
+        # x = F.sigmoid(self.fc4(x))
         return x
 
 

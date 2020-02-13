@@ -4,11 +4,11 @@ class ActorCritic:
         self.actor = actor
         self.critic = critic
 
-    def train(self, episodes, discount_factor):
+    def train(self, episodes, param):
         episode_lengths = []
         epsilon = 0.8
-        discount_factor = 0.99
         epsilon_decay = 0.997
+        discount_factor = 0.99
         elig_actor = 0.8
         elig_critic = 0.8
         # Init critic
@@ -39,7 +39,6 @@ class ActorCritic:
             # critic - temporal difference
             td_error = self.critic.compute_td_error(curr_state, next_state, reward, discount_factor,
                                                     finished=self.game.is_finished())
-
             # e(s) = 1 for critic
             self.critic.set_eligibility(curr_state, 1)
 

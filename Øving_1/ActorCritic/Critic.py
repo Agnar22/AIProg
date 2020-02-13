@@ -1,7 +1,6 @@
 class Critic:
 
-    def __init__(self, learning_rate, value_approximator):
-        self.lr = learning_rate
+    def __init__(self, value_approximator):
         self.value_approximator = value_approximator
 
     def reset(self):

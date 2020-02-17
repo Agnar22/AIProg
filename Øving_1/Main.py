@@ -1,4 +1,5 @@
 import json
+import time
 
 from matplotlib import pyplot as plt
 from Board import PegSolitaire, Visualize
@@ -25,8 +26,8 @@ def dfs(game):
     leg_moves = game.get_legal_moves()
     branching_sum[0] += len(leg_moves)
     if len(leg_moves) > 10:
-        print(len(leg_moves))
-        print(leg_moves)
+        # print(len(leg_moves))
+        # print(leg_moves)
         game.print_board()
     for move in leg_moves:
         game.execute_move(move)
@@ -46,30 +47,58 @@ def setup_game(param, game_class):
     return game_class(param['board_type'], param['board_size'], param['cell_types'])
 
 
-def setup_actor_critic(param, game, ac_class, actor_class, critic_class, critic_table, critic_nn):
-    actor = actor_class(param['lr_actor'])
+def setup_actor_critic(param, game, classes):
+    ac_class, actor_class, critic_class, critic_table, critic_nn = classes
 
+    actor = actor_class(param['lr_actor'])
     critic_module = critic_table(param['lr_critic']) if param['critic_mode'] == 'table' \
-        else critic_nn(param['lr_critic'], param['network_structure'])
+        else critic_nn(param)
     critic = critic_class(critic_module)
 
-    return ac_class(game, actor, critic)
+    return ac_class(game, actor, critic), actor, critic, critic_module
+
+
+def visualize_final_solution(param, game, actor):
+    move = None
+    game.reset()
+    Visualize.draw(game.board, triangle=param['board_type'] == 'triangle', last_move=move)
+    time.sleep(param['delay'])
+
+    while not game.is_finished():
+        move = actor.get_action(game.get_state(), game.get_legal_actions(), 0)
+        Visualize.draw(game.board, triangle=param['board_type'] == 'triangle', last_move=move)
+        time.sleep(param['delay'])
+
+
+def plot_scores(scores):
+    plt.close('all')
+    plt.plot(list(range(len(scores))), scores)
+    plt.legend()
+    plt.show()
+
+
+def train_actor_critic(param, actor_critic):
+    return actor_critic.train(param['num_episodes'], param)
 
 
 if __name__ == '__main__':
+    param = read_json("PivotalParameters.json")
     # # DFS of game
-    # game = PegSolitaire.PegSolitaire()
+    # game = setup_game(param, PegSolitaire.PegSolitaire)
     # game.print_board()
     # print(dfs(game))
     # print(branching_sum)
     # print(depth_sum)
     # print(len(visited))
 
-    # Training ac to master Peg solitaire
-    param = read_json("PivotalParameters.json")
+    # # Training ac to master Peg solitaire
+    classes = [ActorCritic.ActorCritic, Actor.Actor, Critic.Critic, CriticModules.Table, CriticModules.NNApproximator]
+
     game = setup_game(param, PegSolitaire.PegSolitaire)
-    ac = setup_actor_critic(param, game, ActorCritic.ActorCritic, Actor.Actor,
-                            Critic.Critic, CriticModules.Table, CriticModules.NNApproximator)
+    ac, actor, *_ = setup_actor_critic(param, game, classes)
+    scores = train_actor_critic(param, ac)
+    plot_scores(scores)
+    visualize_final_solution(param, game, actor)
 
     # for _ in range(1):
     #     game = PegSolitaire.PegSolitaire()
@@ -91,7 +120,3 @@ if __name__ == '__main__':
     # moves = game.get_legal_moves()
     # game.execute_move(moves[0])
     # Visualize.draw(game.board, triangle=False, last_move=moves[0])
-
-
-
-

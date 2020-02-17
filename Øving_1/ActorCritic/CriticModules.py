@@ -30,25 +30,19 @@ class Table:
 
 
 class NNApproximator:
-    def __init__(self, NN):
-        self.NN = NN
+    def __init__(self, param):
+        print(param['network_structure'])
+        self.param = param
+        self.NN = Net(param['network_structure'])
         self.criterion = nn.MSELoss()
-        self.optimizer = optim.SGD(NN.parameters(), lr=0.1, momentum=0.0)
-        self.elig = [
-            torch.Tensor(np.zeros((100, 2))), torch.Tensor(np.zeros((100))),
-            torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
-            torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
-            torch.Tensor(np.zeros((1, 100))), torch.Tensor(np.zeros((1)))
-        ]
+        self.optimizer = optim.SGD(self.NN.parameters(), lr=0.1, momentum=0.0)
+        self.elig = [torch.Tensor(np.zeros((val, self.param['network_structure'][num - 1]))) for num, val in
+                     enumerate(self.param['network_structure'][1:], 1)]
         self.elig_decay = 0.9
 
     def reset(self):
-        self.elig = [
-            torch.Tensor(np.zeros((100, 25))), torch.Tensor(np.zeros((100))),
-            torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
-            torch.Tensor(np.zeros((100, 100))), torch.Tensor(np.zeros((100))),
-            torch.Tensor(np.zeros((1, 100))), torch.Tensor(np.zeros((1)))
-        ]
+        self.elig = [torch.Tensor(np.zeros((val, self.param['network_structure'][num - 1]))) for num, val in
+                     enumerate(self.param['network_structure'][1:], 1)]
 
     def set_eligibility(self, state, eligibility):
         pass
@@ -58,7 +52,7 @@ class NNApproximator:
 
     def predict(self, x):
         ans = self.NN(torch.Tensor(x[1].flatten()))
-        print(ans)
+        # print(ans)
         return ans
 
     def fit(self, state, td_error):
@@ -70,6 +64,10 @@ class NNApproximator:
         """
 
         self.optimizer.zero_grad()
+        # print("TD_error: ", td_error)
+
+        if td_error == 0:
+            td_error = 1.0E-10
 
         outputs = self.NN(torch.Tensor(state[1].flatten()))
         loss = self.criterion(outputs, outputs + td_error)
@@ -77,9 +75,10 @@ class NNApproximator:
 
         # Update weights with eligibility
         for num, f in enumerate(self.NN.parameters()):
-            self.elig[num] = self.elig[num] + f.grad * ((2 * float(td_error)) ** (-1))
-            f.grad = float(td_error) * self.elig[num]
-            self.elig[num] = self.elig_decay * self.elig[num]
+            if num % 2 == 1: continue
+            self.elig[num // 2] = self.elig[num // 2] + f.grad * ((2 * float(td_error)) ** (-1))
+            f.grad = float(td_error) * self.elig[num // 2]
+            self.elig[num // 2] = self.elig_decay * self.elig[num // 2]
         self.optimizer.step()
 
         # print("epoch: {0}, running_loss: {1:.3f}".format(0, loss.item()))
@@ -88,9 +87,13 @@ class NNApproximator:
 class Net(nn.Module):
     def __init__(self, architectrue):
         super(Net, self).__init__()
-        self.weights = []
-        for num, val in enumerate(architectrue, 1):
+        self.weights = nn.ModuleList()
+        print(architectrue)
+        for num, val in enumerate(architectrue):
+            if num == 0: continue
+            print(num, val, architectrue[num - 1])
             self.weights.append(nn.Linear(architectrue[num - 1], val))
+        # self.weights=nn.ParameterList(self.weights)
         # self.fc1 = nn.Linear(25, 100)
         # self.fc2 = nn.Linear(100, 100)
         # self.fc3 = nn.Linear(100, 100)

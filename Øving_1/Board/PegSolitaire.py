@@ -6,6 +6,7 @@ from Board import Hexagonal
 class PegSolitaire(Hexagonal.Hexagonal):
 
     def __init__(self, board_type, board_size, cell_types):
+        self.board_params = (board_type, board_size, cell_types)
         Hexagonal.Hexagonal.__init__(self, board_type, board_size, cell_types)
         self.history = []
 
@@ -78,7 +79,7 @@ class PegSolitaire(Hexagonal.Hexagonal):
         # return 1 - np.sum(self.board == 1)**2 / 10
 
     def reset(self):
-        Hexagonal.Hexagonal.__init__(self)
+        Hexagonal.Hexagonal.__init__(self, *self.board_params)
 
     def print_board(self):
         to_replace = [("0", "\u25cb"), ("1", "\u2b24")]

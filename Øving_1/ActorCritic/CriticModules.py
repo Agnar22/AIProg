@@ -66,6 +66,7 @@ class NNApproximator:
         self.optimizer.zero_grad()
         # print("TD_error: ", td_error)
 
+        # print("error", td_error)
         if td_error == 0:
             td_error = 1.0E-10
 
@@ -100,8 +101,11 @@ class Net(nn.Module):
         # self.fc4 = nn.Linear(100, 1)
 
     def forward(self, x):
-        for layer in self.weights:
-            x = F.relu(layer(x))
+        for num, layer in enumerate(self.weights):
+            if num+1==len(self.weights):
+                x = F.tanh(layer(x))
+            else:
+                x = F.relu(layer(x))
         # x = F.relu(self.fc1(x))
         # x = F.relu(self.fc2(x))
         # x = F.relu(self.fc3(x))

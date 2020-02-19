@@ -86,20 +86,22 @@ def train_actor_critic(param, actor_critic):
 
 if __name__ == '__main__':
     # TODO:
-    # - finish visualization
+    #
+    #   [x] - finish visualization
     # - read through splitGD
-    # - correct td_error NN
-    # - set epsilon to 0 and visualize last run
+    #   [x] - correct td_error NN
+    #   [x] - set epsilon to 0 and visualize last run
     # What to solve:
     # - Convergence on:
     #   - Triangle (5)
-    #       - Table
+    #   [x] - Table
     #       - NN
     #   - Diamond (4) (discover Ca and Cb?)
-    #       - Table
-    #       - NN
+    #   [x] - Table
+    #   [x] - NN
     # - Show reasonable behavior (some indication of reasonable behaviour):
-    #   - Triangle (4 to 8) or diamond (3 to 6), size, open cells, table or NN
+    #   - Triangle (4 to 8) or diamond (3 to 6), size, open cells, [x] table or NN
+
     param = read_json("PivotalParameters.json")
     # # DFS of game
     # game = setup_game(param, PegSolitaire.PegSolitaire)
@@ -135,7 +137,3 @@ if __name__ == '__main__':
     #     plt.plot(list(range(len(scores))), scores)
     #     plt.legend()
     #     plt.show()
-
-    # moves = game.get_legal_moves()
-    # game.execute_move(moves[0])
-    # Visualize.draw(game.board, triangle=False, last_move=moves[0])

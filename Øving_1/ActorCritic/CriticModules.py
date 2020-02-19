@@ -103,22 +103,14 @@ class Net(nn.Module):
             if num == 0: continue
             print(num, val, architectrue[num - 1])
             self.weights.append(nn.Linear(architectrue[num - 1], val))
-        # self.weights=nn.ParameterList(self.weights)
-        # self.fc1 = nn.Linear(25, 100)
-        # self.fc2 = nn.Linear(100, 100)
-        # self.fc3 = nn.Linear(100, 100)
-        # self.fc4 = nn.Linear(100, 1)
 
     def forward(self, x):
         for num, layer in enumerate(self.weights):
             if num + 1 == len(self.weights):
-                x = F.tanh(layer(x))
+                x = torch.tanh(layer(x))
+                # x = layer(x)
             else:
                 x = F.relu(layer(x))
-        # x = F.relu(self.fc1(x))
-        # x = F.relu(self.fc2(x))
-        # x = F.relu(self.fc3(x))
-        # x = F.sigmoid(self.fc4(x))
         return x
 
 

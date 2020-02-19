@@ -80,25 +80,25 @@ def plot_scores(scores):
     plt.show()
 
 
-def train_actor_critic(param, actor_critic):
-    return actor_critic.train(param['num_episodes'], param)
+def train_actor_critic(param, actor_critic, visualize):
+    return actor_critic.train(param['num_episodes'], param, visualize)
 
 
 if __name__ == '__main__':
     # TODO:
     #
     #   [x] - finish visualization
-    # - read through splitGD
+    #   [x] - read through splitGD
     #   [x] - correct td_error NN
     #   [x] - set epsilon to 0 and visualize last run
     # What to solve:
-    # - Convergence on:
-    #   - Triangle (5)
-    #   [x] - Table
-    #       - NN
-    #   - Diamond (4) (discover Ca and Cb?)
-    #   [x] - Table
-    #   [x] - NN
+    #   [x] - Convergence on:
+    #       [x]  - Triangle (5)
+    #           [x] - Table
+    #           [x} - NN
+    #       [x]  - Diamond (4) (discover Ca and Cb?)
+    #           [x] - Table
+    #           [x] - NN
     # - Show reasonable behavior (some indication of reasonable behaviour):
     #   - Triangle (4 to 8) or diamond (3 to 6), size, open cells, [x] table or NN
 
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     game = setup_game(param, PegSolitaire.PegSolitaire)
     game.print_board()
     ac, actor, *_ = setup_actor_critic(param, game, classes)
-    scores = train_actor_critic(param, ac)
+    scores = train_actor_critic(param, ac, visualize_final_solution)
     plot_scores(scores)
     visualize_final_solution(param, game, actor)
 

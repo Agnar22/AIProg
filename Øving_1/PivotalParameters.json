@@ -1,18 +1,18 @@
 {
   "board_type": "diamond",
-  "board_size": 6,
-  "cell_types": [[[0,0]]],
+  "board_size": 4,
+  "cell_types": [[[1, 1]]],
   "num_episodes": 1500,
-  "critic_mode": "NN",
-  "network_structure": [36, 50, 1],
-  "lr_actor": 0.5,
-  "lr_critic": 0.0001,
-  "elig_decay_actor": 1,
+  "critic_mode": "table",
+  "network_structure": [16, 50, 1],
+  "lr_actor": 0.7,
+  "lr_critic": 0.7,
+  "elig_decay_actor": 0.9,
   "elig_decay_critic": 0.8,
-  "disc_actor": 0.9,
+  "disc_actor": 0.95,
   "disc_critic": 0.8,
   "epsilon": 0.8,
-  "epsilon_decay": 0.995,
+  "epsilon_decay": 0.997,
   "display_time": 2000,
-  "delay": 1.5
+  "delay": 0.5
 }

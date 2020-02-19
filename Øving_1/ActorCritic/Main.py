@@ -4,7 +4,7 @@ class ActorCritic:
         self.actor = actor
         self.critic = critic
 
-    def train(self, episodes, param):
+    def train(self, episodes, param, visualization):
         episode_lengths = []
         epsilon = param['epsilon']
         epsilon_decay = param['epsilon_decay']
@@ -21,6 +21,9 @@ class ActorCritic:
             print("new episode", episode)
             self.run_episode(epsilon, disc_actor, disc_critic, elig_actor, elig_critic, episode_lengths)
             epsilon *= epsilon_decay
+            if param['display_time'] < episode:
+                visualization(param, self.game, self.actor)
+
         return episode_lengths
 
     def run_episode(self, epsilon, disc_actor, disc_critic, elig_actor, elig_critic, episode_lengths):

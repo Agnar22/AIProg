@@ -6,11 +6,11 @@ class ActorCritic:
 
     def train(self, episodes, param):
         episode_lengths = []
-        epsilon = 0.8
-        epsilon_decay = 0.997
-        discount_factor = 0.99
-        elig_actor = 0.8
-        elig_critic = 0.8
+        epsilon = param['epsilon']
+        epsilon_decay = param['epsilon_decay']
+        discount_factor = param['disc_actor']
+        elig_actor = param['elig_decay_actor']
+        elig_critic = param['elig_decay_critic']
         # Init critic
         self.critic.reset()
         # Init actor
@@ -60,4 +60,4 @@ class ActorCritic:
             # a:=a'
             curr_action = next_action
         print("End", len(curr_episode), epsilon)
-        episode_lengths.append(len(curr_episode))
+        episode_lengths.append((self.game.get_state()[1] == 1).sum())

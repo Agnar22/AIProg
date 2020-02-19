@@ -9,6 +9,7 @@ class PegSolitaire(Hexagonal.Hexagonal):
         self.board_params = (board_type, board_size, cell_types)
         Hexagonal.Hexagonal.__init__(self, board_type, board_size, cell_types)
         self.history = []
+        self.num_pegs = (self.board == 1).sum()
 
     def get_state(self):
         return (str(self.board), self.board)
@@ -74,9 +75,14 @@ class PegSolitaire(Hexagonal.Hexagonal):
         """
         if np.sum(self.board == 1) == 1:
             print("Won!")
-        return 1 if np.sum(self.board == 1) == 1 else -1
+        # return 1 if np.sum(self.board == 1) == 1 else -1
         # return 1 if np.sum(self.board == 1) == 1 else -np.sum(self.board == 1) / 5
         # return 1 - np.sum(self.board == 1)**2 / 10
+        # print(8*np.tan(((self.num_pegs/2)-(self.board == 1).sum()-1)/self.num_pegs/2)-1)
+        # return 8*np.tan(((self.num_pegs/2)-(self.board == 1).sum()-1)/self.num_pegs/2-1)
+        # print(2*((self.num_pegs/8)-(self.board == 1).sum()))
+        # return 2*((self.num_pegs/8)-(self.board == 1).sum())
+        return np.tanh(2*((self.num_pegs/8)-(self.board == 1).sum()))
 
     def reset(self):
         Hexagonal.Hexagonal.__init__(self, *self.board_params)

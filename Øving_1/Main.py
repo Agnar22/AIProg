@@ -59,21 +59,24 @@ def setup_actor_critic(param, game, classes):
 
 
 def visualize_final_solution(param, game, actor):
+    neighbours = [(-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0)]
     move = None
     game.reset()
-    Visualize.draw(game.board, triangle=param['board_type'] == 'triangle', last_move=move)
+    Visualize.draw(game.board, triangle=param['board_type'] == 'triangle', last_move=move, neighbours=neighbours)
     time.sleep(param['delay'])
+    # input()
 
     while not game.is_finished():
-        move = actor.get_action(game.get_state(), game.get_legal_actions(), 0)
-        Visualize.draw(game.board, triangle=param['board_type'] == 'triangle', last_move=move)
+        move = actor.get_action(game.get_state(), game.get_legal_moves(), 0)
+        game.execute_move(move)
+        Visualize.draw(game.board, triangle=param['board_type'] == 'triangle', last_move=move, neighbours=neighbours)
         time.sleep(param['delay'])
+        # input()
 
 
 def plot_scores(scores):
     plt.close('all')
     plt.plot(list(range(len(scores))), scores)
-    plt.legend()
     plt.show()
 
 
@@ -82,6 +85,21 @@ def train_actor_critic(param, actor_critic):
 
 
 if __name__ == '__main__':
+    # TODO:
+    # - finish visualization
+    # - read through splitGD
+    # - correct td_error NN
+    # - set epsilon to 0 and visualize last run
+    # What to solve:
+    # - Convergence on:
+    #   - Triangle (5)
+    #       - Table
+    #       - NN
+    #   - Diamond (4) (discover Ca and Cb?)
+    #       - Table
+    #       - NN
+    # - Show reasonable behavior (some indication of reasonable behaviour):
+    #   - Triangle (4 to 8) or diamond (3 to 6), size, open cells, table or NN
     param = read_json("PivotalParameters.json")
     # # DFS of game
     # game = setup_game(param, PegSolitaire.PegSolitaire)
@@ -95,6 +113,7 @@ if __name__ == '__main__':
     classes = [ActorCritic.ActorCritic, Actor.Actor, Critic.Critic, CriticModules.Table, CriticModules.NNApproximator]
 
     game = setup_game(param, PegSolitaire.PegSolitaire)
+    game.print_board()
     ac, actor, *_ = setup_actor_critic(param, game, classes)
     scores = train_actor_critic(param, ac)
     plot_scores(scores)

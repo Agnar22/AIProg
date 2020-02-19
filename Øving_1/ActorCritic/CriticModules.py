@@ -36,13 +36,16 @@ class NNApproximator:
         self.NN = Net(param['network_structure'])
         self.criterion = nn.MSELoss()
         self.optimizer = optim.SGD(self.NN.parameters(), lr=param['lr_critic'], momentum=0.0)
-        self.elig = [torch.Tensor(np.zeros((val, self.param['network_structure'][num - 1]))) for num, val in
-                     enumerate(self.param['network_structure'][1:], 1)]
+        print([tuple(layer.shape) for layer in self.NN.parameters()])
+        self.elig = [torch.Tensor(np.zeros(tuple(layer.shape))) for layer in self.NN.parameters()
+        ]
+
         self.elig_decay = param['elig_decay_critic']
+        self.disc_critic = param['disc_critic']
 
     def reset(self):
-        self.elig = [torch.Tensor(np.zeros((val, self.param['network_structure'][num - 1]))) for num, val in
-                     enumerate(self.param['network_structure'][1:], 1)]
+        self.elig = [torch.Tensor(np.zeros(tuple(layer.shape))) for layer in self.NN.parameters()
+        ]
 
     def set_eligibility(self, state, eligibility):
         pass
@@ -82,10 +85,10 @@ class NNApproximator:
         loss.backward(retain_graph=True)
         # Update weights with eligibility
         for num, f in enumerate(self.NN.parameters()):
-            if num % 2 == 1: continue
-            self.elig[num // 2] = self.elig[num // 2] + f.grad * ((2 * float(td_error)) ** (-1))
-            f.grad = float(td_error) * self.elig[num // 2]
-            self.elig[num // 2] = self.elig_decay * self.elig[num // 2]
+            # if num % 2 == 1: continue
+            self.elig[num] = self.elig[num] + f.grad * ((2 * float(td_error)) ** (-1))
+            f.grad = float(td_error) * self.elig[num]
+            self.elig[num] = self.disc_critic * self.elig_decay * self.elig[num]
         self.optimizer.step()
 
         # print("epoch: {0}, running_loss: {1:.3f}".format(0, loss.item()))
@@ -121,7 +124,7 @@ class Net(nn.Module):
 
 if __name__ == '__main__':
     # param=
-    net = NNApproximator({'network_structure': [2, 10, 1], 'lr_critic': 0.02, 'elig_decay_critic':0.3})
+    net = NNApproximator({'network_structure': [2, 10, 1], 'lr_critic': 0.02, 'elig_decay_critic': 0.3})
 
     # criterion = nn.MSELoss()
     # optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.0)
@@ -135,7 +138,7 @@ if __name__ == '__main__':
     print(net.predict(tensor_x[0]))
     for _ in range(1000):
         for num in range(4):
-            td_error = tensor_y[num]-net.predict(tensor_x[num])
+            td_error = tensor_y[num] - net.predict(tensor_x[num])
             net.fit(tensor_x[num], td_error, after=True)
             print("out", net.predict(tensor_x[num]), tensor_y[num])
 

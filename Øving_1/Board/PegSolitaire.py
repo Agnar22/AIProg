@@ -76,7 +76,7 @@ class PegSolitaire(Hexagonal.Hexagonal):
         if np.sum(self.board == 1) == 1:
             print("Won!")
         return 1 if np.sum(self.board == 1) == 1 else -1
-        # print(2*((self>q12.num_pegs/8)-(self.board == 1).sum()))
+        # print(2*((self.num_pegs/8)-(self.board == 1).sum()))
         # return 2*((self.num_pegs/8)-(self.board == 1).sum())
         # return np.tanh(2*((self.num_pegs/8)-(self.board == 1).sum()))
 

@@ -16,7 +16,7 @@ class Nim:
         return [str(x) for x in range(1, min(self.board[0] + 1, self.max_take + 1))]
 
     def execute_move(self, move):
-        assert (0 < int(move) <= self.board[0])
+        assert (0 < int(move) <= min(self.board[0], self.max_take))
 
         self.board[0] -= int(move)
         self.history.append(move)

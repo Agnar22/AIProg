@@ -9,7 +9,7 @@ class Ledge:
         self.turn = 0
 
     def get_state(self):
-        return (str(self.board), np.array(self.board))
+        return (str(self.history), np.array(self.board))
 
     def get_legal_moves(self):
         legal_moves = []

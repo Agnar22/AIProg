@@ -6,21 +6,36 @@ import math
 class MCTS:
     def __init__(self):
         self.states = {}  # visits, [actions]
-        self.state_action = {}  # visits, sum q values
+        self.state_action = {}  # [visits, sum q values]
+
+    def get_recommended_move(self, state):
+        max_visits = None
+        best_action = None
+        for action in self.states[state][1]:
+            visits = self.state_action[state + '_' + action][0]
+            if max_visits == None or visits > max_visits:
+                max_visits = visits
+                best_action = action
+        return best_action
+
+    def get_search_statistics(self, state):
+        return self.states[state], [self.state_action[state + '_' + action] for action in self.states[state][1]]
 
     def search(self, game, search_num):
         game.store_state()
-        self.states[game.get_state()] = [0, []]
+        # self.states[game.get_state()[0]] = [0, []]
         for _ in range(search_num):
             self._single_search(game)
             game.load_state()
 
     def _single_search(self, game):
-        if game.is_final(): return game.outcome
+        if game.is_finished():
+            return game.outcome()
+
+        state = game.get_state()[0]
 
         # Tree search
-        state = game.get_state()[0]
-        if len(self.states[state][1]) > 0:
+        if state in self.states:
             outcome = self._tree_search(game, state)
             return outcome
 
@@ -28,7 +43,9 @@ class MCTS:
         self._node_expansion(game, state)
 
         # Leaf evaluation
-        evaluation = self.rollout(game)
+        action, evaluation = self.rollout(game)
+        self.states[state][0] = self.states[state][0] + 1
+        self.state_action[state + '_' + action] = [1, evaluation[game.get_turn()]]
 
         # Backpropagation
         return evaluation
@@ -50,38 +67,42 @@ class MCTS:
         max_val = None
         max_action = None
 
-        for action in game.get_moves():
-            score = MCTS.uct(1, self.state[state], self.state_action[state + '_' + action])
+        for action in game.get_legal_moves():
+            score = MCTS.uct(1, self.states[state], self.state_action[state + '_' + action])
             if score == None: return action
-            if score > max_val:
+            if max_val == None or score > max_val:
                 max_val = score
                 max_action = action
         return max_action
 
     def _node_expansion(self, game, state):
-        moves = game.get_moves()
+        self.states[state] = [0, []]
+        moves = game.get_legal_moves()
         self.states[state][1] = moves
         for action in moves:
             self.state_action[state + '_' + action] = [0, 0]
 
     def rollout(self, game):
+        first_action = None
         move_count = 0
         while not game.is_finished():
-            moves = game.get_moves()
-            game.execute_move(moves[random.randint(len(moves))])
+            moves = game.get_legal_moves()
+            rand = random.randint(0, len(moves) - 1)
+            if move_count == 0: first_action = moves[rand]
+            game.execute_move(moves[rand])
             move_count += 1
 
         for _ in range(move_count):
             game.undo_move()
-        return game.outcome()
+        return first_action, game.outcome()
 
     def backpropagation(self):
         pass
 
     @staticmethod
     def uct(c, parent, child):
-        if child[0] == 0: return None
 
+        if child[0] == 0: return None
         exploration = c * math.sqrt(math.log(parent[0]) / child[0])
         q_value = child[1] / child[0]
         return q_value + exploration
@@ -93,4 +114,3 @@ class MCTS:
 
 if __name__ == '__main__':
     pass
-

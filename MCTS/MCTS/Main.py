@@ -19,14 +19,16 @@ class MCTS:
         return best_action
 
     def get_search_statistics(self, state):
+        # print(self.states.keys(),"State:",state)
         return self.states[state], [self.state_action[state + '_' + action] for action in self.states[state][1]]
 
     def search(self, game, search_num):
+        # print("searching")
         game.store_state()
-        # self.states[game.get_state()[0]] = [0, []]
         for _ in range(search_num):
             self._single_search(game)
             game.load_state()
+        # print(self.state_action.values())
 
     def _single_search(self, game):
         if game.is_finished():
@@ -44,13 +46,14 @@ class MCTS:
 
         # Leaf evaluation
         action, evaluation = self.rollout(game)
-        self.states[state][0] = self.states[state][0] + 1
-        self.state_action[state + '_' + action] = [1, evaluation[game.get_turn()]]
 
         # Backpropagation
+        self.states[state][0] = self.states[state][0] + 1
+        self.state_action[state + '_' + action] = [1, evaluation[game.get_turn()]]
         return evaluation
 
     def _tree_search(self, game, state):
+        # _select_move employs the tree policy (uct) when choosing action
         move = self._select_move(game, state)
         game.execute_move(move)
         outcome = self._single_search(game)
@@ -83,6 +86,7 @@ class MCTS:
             self.state_action[state + '_' + action] = [0, 0]
 
     def rollout(self, game):
+        # A random behaviour policy
         first_action = None
         move_count = 0
         while not game.is_finished():

@@ -1,3 +1,17 @@
 {
-
+  "games": {
+    "nim": {
+      "startPieces": 15,
+      "maxTake": 3
+    },
+    "ledge": {
+      "startPieces": "01201"
+    }
+  },
+  "simulator": {
+    "batchSize": 20,
+    "playerStarting": 1,
+    "searches": 2000,
+    "expParam": 1
+  }
 }

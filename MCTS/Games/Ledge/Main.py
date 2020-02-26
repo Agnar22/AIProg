@@ -2,13 +2,22 @@ import numpy as np
 
 
 class Ledge:
-    def __init__(self, board_str):
+
+    def __init__(self, board_str, verbose=False):
         self.board_start = board_str
         self.board = np.array([int(x) for x in board_str])
         self.store_board = None
         self.history = []
         self.store_history = None
         self.turn = 0
+        self.state = ""
+
+        if verbose:
+            print("Start board: {0}".format(str(self.board)))
+
+    @staticmethod
+    def get_game_name():
+        return "ledge"
 
     def store_state(self):
         self.store_board = np.array(self.board)
@@ -23,7 +32,7 @@ class Ledge:
         return self.turn
 
     def get_state(self):
-        return (str(self.history), np.array(self.board))
+        return (self.state, np.array(self.board))
 
     def get_legal_moves(self):
         legal_moves = []
@@ -40,9 +49,13 @@ class Ledge:
             current_window = []
         return legal_moves
 
-    def execute_move(self, move):
+    def execute_move(self, move, verbose=False):
         if '0' == move:
+            material = 'copper' if self.board[0] == 1 else 'gold'
+            self.state += '_0'
             self.board[0] = 0
+            if verbose:
+                print('Player {0} picks up {1}: {2}'.format(self.turn + 1, material, str(self.board)))
             self.history.append([0, np.array(self.board)])
             self.turn = len(self.history) % 2
             return None
@@ -50,25 +63,31 @@ class Ledge:
         pos_from, pos_to = map(lambda x: int(x), move.split('_'))
 
         assert (pos_from > pos_to >= 0)
-        # print(pos_from, pos_to, self.board[pos_from], self.board[pos_to], self.board)
         assert (self.board[pos_from] > 0 and self.board[pos_to] == 0)
         # TODO: check squares in between
 
+        self.state += '_' + str(pos_from) + str(pos_to)
         self.board[pos_to] = self.board[pos_from]
         self.board[pos_from] = 0
+
+        if verbose:
+            material = 'copper' if self.board[pos_to] == 1 else 'gold'
+            print('Player {0} moves {1} from cell {2} to {3}: {4}'.format(self.turn + 1, material, pos_from, pos_to,
+                                                                          str(self.board)))
         self.history.append([move, np.array(self.board)])
         self.turn = len(self.history) % 2
 
     def undo_move(self):
-        # print(self.history)
+        self.state = '_'.join(self.state.split('_')[:-1])
         self.board = np.array(self.history.pop()[1])
         self.turn = len(self.history) % 2
 
     def is_finished(self):
         return True if (self.board == 2).sum() == 0 else False
 
-    def outcome(self):
-        # print([1, -1] if self.turn == 1 else [-1, 1])
+    def outcome(self, verbose=False):
+        if verbose:
+            print("Player {0} wins!".format((self.turn == 0) + 1))
         return [1, -1] if self.turn == 1 else [-1, 1]
 
     def reset(self):

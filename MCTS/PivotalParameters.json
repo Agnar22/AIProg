@@ -1,17 +1,20 @@
 {
   "games": {
+    "playing": "ledge",
     "nim": {
-      "startPieces": 15,
+      "startPieces": 10,
       "maxTake": 3
     },
     "ledge": {
-      "startPieces": "01201"
+      "startPieces": "1002"
     }
   },
   "simulator": {
+    "processes": 1,
     "batchSize": 20,
-    "playerStarting": 1,
-    "searches": 2000,
+    "playerStarting": 3,
+    "verbose": true,
+    "searches": 1000,
     "expParam": 1
   }
 }

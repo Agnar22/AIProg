@@ -19,16 +19,16 @@ class MCTS:
         return best_action
 
     def get_search_statistics(self, state):
-        # print(self.states.keys(),"State:",state)
         return self.states[state], [self.state_action[state + '_' + action] for action in self.states[state][1]]
 
+    def set_exp_param(self, exp_param):
+        self.exp_param = exp_param
+
     def search(self, game, search_num):
-        # print("searching")
         game.store_state()
         for _ in range(search_num):
             self._single_search(game)
             game.load_state()
-        # print(self.state_action.values())
 
     def _single_search(self, game):
         if game.is_finished():
@@ -71,7 +71,7 @@ class MCTS:
         max_action = None
 
         for action in game.get_legal_moves():
-            score = MCTS.uct(1, self.states[state], self.state_action[state + '_' + action])
+            score = MCTS.uct(self.exp_param, self.states[state], self.state_action[state + '_' + action])
             if score == None: return action
             if max_val == None or score > max_val:
                 max_val = score

@@ -2,14 +2,19 @@ import numpy as np
 
 
 class Nim:
-    def __init__(self, pieces, max_take, verbose=False):
+    def __init__(self, pieces, max_take, starting_player=0, verbose=False):
+        assert (max_take >= 1)
+        assert (pieces >= 1)
+        assert (pieces > max_take)
+
         self.pieces_start = pieces
         self.store_pieces = None
         self.board = np.array([pieces])
         self.max_take = max_take
         self.history = []
         self.store_history = None
-        self.turn = 0
+        self.turn = starting_player
+        self.store_starting_player = starting_player
         self.state_moves = {}
         self.state = ""
 
@@ -21,7 +26,7 @@ class Nim:
         return "ledge"
 
     def get_turn(self):
-        assert (self.turn == len(self.history) % 2)
+        assert ((self.turn + self.store_starting_player) % 2 == len(self.history) % 2)
         return self.turn
 
     def get_state(self):
@@ -50,25 +55,29 @@ class Nim:
         self.state += str(move)
         self.board[0] -= int(move)
         self.history.append([move, np.array(self.board)])
-        self.turn = len(self.history) % 2
+        self.turn = (self.turn + 1) % 2
 
     def undo_move(self):
         self.state = self.state[:-1]
         self.board[0] = self.history.pop()[1]
-        self.turn = len(self.history) % 2
+        self.turn = (self.turn - 1) % 2
 
     def is_finished(self):
         return self.board[0] == 0
 
     def outcome(self, verbose=False):
         if verbose:
-            print("Player {0} wins!".format((self.turn == 0) + 1))
+            print("Player {0} wins!\n".format((self.turn == 0) + 1))
         return [1, -1] if self.turn == 1 else [-1, 1]
 
-    def reset(self):
+    def reset(self, verbose=False):
         self.board = np.array([self.pieces_start])
         self.history = []
         self.turn = 0
+        self.turn = self.store_starting_player
+
+        if verbose:
+            print("Start pile: {0} stones".format(self.pieces_start))
 
     def print_board(self):
         print(self.board[0])

@@ -50,8 +50,8 @@ class Nim:
         assert (0 < int(move) <= min(self.board[0], self.max_take))
 
         if verbose:
-            print("Player {0} selects {1} stones: Remaining stones = {2}".format(
-                self.turn + 1, int(move), self.board[0] - int(move)))
+            print("Player {0} selects {1} stone{3}: Remaining stones = {2}".format(
+                self.turn + 1, int(move), self.board[0] - int(move), "s" if int(move) > 1 else ""))
         self.state += str(move)
         self.board[0] -= int(move)
         self.history.append([move, np.array(self.board)])
@@ -77,7 +77,7 @@ class Nim:
         self.turn = self.store_starting_player
 
         if verbose:
-            print("Start pile: {0} stones".format(self.pieces_start))
+            print("Start pile: {0} stone{1}".format(self.pieces_start, "s" if self.pieces_start>1 else ""))
 
     def print_board(self):
         print(self.board[0])

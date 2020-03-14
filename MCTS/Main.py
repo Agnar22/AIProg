@@ -58,8 +58,6 @@ class GameSimulator:
 
 
 if __name__ == '__main__':
-    # TODO: is store state and load state working correctly?
-
     params = read_json("PivotalParameters.json")
     if params['games']['playing'] == 'nim':
         game = Nim.Nim

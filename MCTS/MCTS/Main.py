@@ -100,9 +100,6 @@ class MCTS:
             game.undo_move()
         return first_action, game.outcome()
 
-    def backpropagation(self):
-        pass
-
     @staticmethod
     def uct(c, parent, child):
 

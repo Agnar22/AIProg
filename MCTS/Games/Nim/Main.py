@@ -33,12 +33,16 @@ class Nim:
         return (self.state, np.array(self.board))
 
     def store_state(self):
-        self.store_pieces = self.board[0]
+        self.store_pieces = np.array(self.board)
         self.store_history = list(self.history)
 
     def load_state(self):
-        self.board[0] = self.store_pieces
+        self.board = np.array(self.store_pieces)
         self.history = list(self.store_history)
+        if len(self.history) > 0:
+            self.state = "_" + "_".join([str(x[0]) for x in self.history])
+        else:
+            self.state = ""
 
     def get_legal_moves(self):
         if self.get_state()[0] in self.state_moves:
@@ -52,13 +56,13 @@ class Nim:
         if verbose:
             print("Player {0} selects {1} stone{3}: Remaining stones = {2}".format(
                 self.turn + 1, int(move), self.board[0] - int(move), "s" if int(move) > 1 else ""))
-        self.state += str(move)
+        self.state += "_" + str(move)
         self.board[0] -= int(move)
         self.history.append([move, np.array(self.board)])
         self.turn = (self.turn + 1) % 2
 
     def undo_move(self):
-        self.state = self.state[:-1]
+        self.state = "_" + "_".join(self.state.split("_")[:-1])
         self.board[0] = self.history.pop()[1]
         self.turn = (self.turn - 1) % 2
 
@@ -77,7 +81,7 @@ class Nim:
         self.turn = self.store_starting_player
 
         if verbose:
-            print("Start pile: {0} stone{1}".format(self.pieces_start, "s" if self.pieces_start>1 else ""))
+            print("Start pile: {0} stone{1}".format(self.pieces_start, "s" if self.pieces_start > 1 else ""))
 
     def print_board(self):
         print(self.board[0])

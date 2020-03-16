@@ -1,3 +1,4 @@
+import traceback
 import numpy as np
 import random
 import math
@@ -92,7 +93,8 @@ class MCTS:
         while not game.is_finished():
             moves = game.get_legal_moves()
             rand = random.randint(0, len(moves) - 1)
-            if move_count == 0: first_action = moves[rand]
+            if move_count == 0:
+                first_action = moves[rand]
             game.execute_move(moves[rand])
             move_count += 1
 

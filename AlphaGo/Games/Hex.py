@@ -9,11 +9,11 @@ class Hex:
         self.store_board = np.array([])
         self.history = []
         self.store_history = []
+        self.state = ""
         self.starting_player = starting_player
 
     def get_state(self):
-        return (str(list(self.hex_board.get_board().flatten())), np.array(self.hex_board.get_board()))
-        # return ("_".join([x[0] for x in self.history]), np.array(self.hex_board.get_board()))
+        return (self.state, np.array(self.hex_board.get_board()))
 
     def get_turn(self):
         return (len(self.history) + self.starting_player + 1) % 2 + 1
@@ -33,12 +33,15 @@ class Hex:
         pass
 
     def execute_move(self, move):
-        assert (self.hex_board[int(move)] == 0)
+        #assert (self.hex_board[int(move)] == 0)
+        self.state += "_" + str(move)
         self.history.append((int(move), np.array(self.hex_board.get_board())))
         self.hex_board[int(move)] = self.get_turn()
 
     def undo_move(self):
-        self.hex_board.set_board(self.history.pop()[1])
+        move, board = self.history.pop()
+        self.hex_board.set_board(board)
+        self.state = self.state[:-len(str(move)) - 1]
 
     def is_finished(self):
         # This assumes that we did not start in a finished position
@@ -97,7 +100,7 @@ def dfs(game):
         # game.print_board()
         visited.add(game.get_state()[0])
 
-    if len(game.history) == 5:
+    if len(game.history) == 4:
         end_pos[0] += 1
         return 0, 1
 

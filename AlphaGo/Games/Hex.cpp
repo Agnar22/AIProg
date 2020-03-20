@@ -2,6 +2,7 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <chrono>
 #include "Hexagonal.h"
 
 
@@ -121,7 +122,9 @@ int dfs(Hex game, int depth){
 
 int main(){
 	Hex game(5, 1);
+	auto start = chrono::high_resolution_clock::now();
 	dfs(game, 4);
-	cout << endPos << endl;
+	auto stop = chrono::high_resolution_clock::now();
+	cout << chrono::duration_cast<chrono::microseconds>(stop - start).count() << " " << endPos << endl;
 
 }

@@ -1,5 +1,11 @@
+#ifndef HEXAGONAL_H
 #define HEXAGONAL_H
 #include <vector>
+#include <string>
+#include <iostream>
+#include <cmath>
+#include <stdlib.h>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -24,7 +30,7 @@ class Hexagonal {
 
 		void setBoard(vector<vector<int>>);
 
-		vector<int> getUnoccupied(void);
+		vector<string> getUnoccupied(void);
 
 		vector<int> getNeighbours(int, int);
 		
@@ -35,4 +41,4 @@ class Hexagonal {
 		int setSquare(int, int);
 };
 
-
+#endif

@@ -1,10 +1,4 @@
-#include <vector>
-#include <iostream>
-#include <set>
-#include <string>
-#include <chrono>
 #include "Hexagonal.h"
-
 
 class Hex {
 
@@ -43,14 +37,14 @@ class Hex {
 			history = storeHistory;
 		}
 
-		vector<int> getLegalMoves(){
+		vector<string> getLegalMoves(){
 			return hexBoard.getUnoccupied();
 		}
 
-		void executeMove(int move){
-			state = state + "_" + to_string(move);
-			hexBoard.setSquare(move, getTurn());
-			history.push_back(move);
+		void executeMove(string move){
+			state = state + "_" + move;
+			hexBoard.setSquare(stoi(move), getTurn());
+			history.push_back(stoi(move));
 		}
 
 		void undoMove(){
@@ -94,10 +88,11 @@ class Hex {
 			return (wonPlayerOne || wonPlayerTwo) ? true : false;
 		}
 
-		int outcome(){
-			return (history.size() + startingPlayer ) % 2;
+		pair<float, float> outcome(){
+			return ((history.size() + startingPlayer) % 2 ) ? make_pair(-1, 1) : make_pair(1, -1);
 		}
 };
+/*
 
 set<string> visited;
 int endPos = 0;
@@ -110,7 +105,7 @@ int dfs(Hex game, int depth){
 	if (game.isFinished()){
 		return 0;
 	}
-	vector<int> moves = game.getLegalMoves();
+	vector<string> moves = game.getLegalMoves();
 
 	for (int x = 0; x < moves.size(); x++){
 		game.executeMove(moves[x]);
@@ -119,12 +114,12 @@ int dfs(Hex game, int depth){
 	}
 	return 0;
 }
-
 int main(){
 	Hex game(5, 1);
 	auto start = chrono::high_resolution_clock::now();
-	dfs(game, 4);
+	dfs(game, 5);
 	auto stop = chrono::high_resolution_clock::now();
 	cout << chrono::duration_cast<chrono::microseconds>(stop - start).count() << " " << endPos << endl;
 
 }
+*/

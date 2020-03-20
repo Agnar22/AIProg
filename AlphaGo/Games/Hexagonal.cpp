@@ -1,6 +1,3 @@
-#include<vector>
-#include<string>
-#include<iostream>
 #include "Hexagonal.h"
 
 Hexagonal::Hexagonal(int boardSize){
@@ -22,14 +19,14 @@ void Hexagonal::setBoard(vector<vector<int>> inpBoard){
 	board = inpBoard;
 }
 
-vector<int> Hexagonal::getUnoccupied(){
+vector<string> Hexagonal::getUnoccupied(){
 	//TODO: make this a return a reference
-	vector<int> unoccupied;
+	vector<string> unoccupied;
 	for (int x=0; x < board.size(); x++){
 		for (int y=0; y < board[0].size(); y++){
 			if (board[x][y] == 0){
 				int pos = x * board[0].size() + y;
-				unoccupied.push_back(pos);
+				unoccupied.push_back(to_string(pos));
 			}
 		}
 	}

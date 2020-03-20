@@ -8,8 +8,11 @@
 class Hex {
 
 	private:
-		Hexagonal hexBoard;
+		Hexagonal hexBoard = NULL;
+		vector<vector<int>> storeBoard;
 		int startingPlayer;
+		vector<int> history;
+		vector<int> storeHistory;
 		string state;
 
 
@@ -17,9 +20,6 @@ class Hex {
 
 		Hex(int boardSize, int inpStartingPlayer){
 			hexBoard = Hexagonal(boardSize);
-			vector<vector<int>> storeBoard;
-			vector<int> history;
-			vector<int> storeHistory;
 			startingPlayer = inpStartingPlayer;
 			state = "";
 		}
@@ -29,7 +29,7 @@ class Hex {
 		}
 
 		int getTurn(){
-			return (hitsory.size() + inpStartingPlayer + 1) % 2 + 1;
+			return (history.size() + startingPlayer + 1) % 2 + 1;
 		}
 
 		void storeState(){
@@ -38,7 +38,7 @@ class Hex {
 		}
 
 		void loadState(){
-			hex.setBoard(storeBoard);
+			hexBoard.setBoard(storeBoard);
 			history = storeHistory;
 		}
 
@@ -54,13 +54,13 @@ class Hex {
 
 		void undoMove(){
 			int move = history.back();
-			history.pop();
-			hexBoard.seqSquare(move, 0);
+			history.pop_back();
+			hexBoard.setSquare(move, 0);
 			state = state.substr(0, state.length() - to_string(move).length()-1);
 		}	
 		
 		bool isFinished(){
-			if (history.length() == 0){
+			if (history.size() == 0){
 				return false;
 			}
 			vector<bool> border = {false, false, false, false};
@@ -69,7 +69,7 @@ class Hex {
 			int colour = hexBoard.getSquare(history.back());
 			int pos = 0;
 
-			while (pos < neighbours.length()){
+			while (pos < neighbours.size()){
 				int currPos = neighbours[pos];
 				pair<int, int> borderSides = hexBoard.border(currPos);
 				if (borderSides.first != -1){
@@ -78,10 +78,10 @@ class Hex {
 				if (borderSides.second != -1){
 					border[borderSides.second] = true;
 				}
-				vector<int> currNeighbours = hexBoard.getNeighbours(currPos);
+				vector<int> currNeighbours = hexBoard.getNeighbours(currPos, colour);
 				
 				for (int x = 0; x < currNeighbours.size(); x++){
-					if (addedNeighbours.find(currNeighbours[x]) == s.end()){
+					if (addedNeighbours.find(currNeighbours[x]) == addedNeighbours.end()){
 						neighbours.push_back(currNeighbours[x]);
 						addedNeighbours.insert(currNeighbours[x]);
 					}
@@ -94,16 +94,16 @@ class Hex {
 		}
 
 		int outcome(){
-			return (history.length() + startingPlayer ) % 2;
+			return (history.size() + startingPlayer ) % 2;
 		}
-}
+};
 
 set<string> visited;
 int endPos = 0;
 
 int dfs(Hex game, int depth){
 	if (depth == 0) {
-		endpos++;
+		endPos++;
 		return 0;
 	}
 	if (game.isFinished()){

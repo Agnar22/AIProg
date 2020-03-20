@@ -8,7 +8,7 @@
 class Hex {
 
 	private:
-		Hexagonal hexBoard = NULL;
+		Hexagonal hexBoard;
 		vector<vector<int>> storeBoard;
 		int startingPlayer;
 		vector<int> history;
@@ -18,8 +18,8 @@ class Hex {
 
 	public:
 
-		Hex(int boardSize, int inpStartingPlayer){
-			hexBoard = Hexagonal(boardSize);
+		Hex(int boardSize, int inpStartingPlayer) : hexBoard(boardSize){
+			//hexBoard(boardSize);
 			startingPlayer = inpStartingPlayer;
 			state = "";
 		}
@@ -119,11 +119,9 @@ int dfs(Hex game, int depth){
 	return 0;
 }
 
-
 int main(){
 	Hex game(5, 1);
 	dfs(game, 4);
 	cout << endPos << endl;
 
 }
-

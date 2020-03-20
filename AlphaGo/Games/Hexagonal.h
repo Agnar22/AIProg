@@ -14,23 +14,25 @@ class Hexagonal {
 		vector<vector<int>> board;
 
 	public:
-		Hexagonal(int boardSize);
+		Hexagonal(int);
 
-		vector<vector<int>> createBoard(int size);
+		Hexagonal(void);
 
-		vector<vector<int>> getBoard();
+		void createBoard(int);
 
-		void setBoard(vector<vector<int>> inpBoard);
+		vector<vector<int>> getBoard(void);
 
-		vector<int> getUnoccupied();
+		void setBoard(vector<vector<int>>);
 
-		vector<int> getNeighbours(int pos, int value);
+		vector<int> getUnoccupied(void);
+
+		vector<int> getNeighbours(int, int);
 		
-		pair<int, int> border(int position);
+		pair<int, int> border(int);
 
-		int getSquare(int pos);
+		int getSquare(int);
 
-		int setSquare(int pos, int value);
+		int setSquare(int, int);
 };
 
 

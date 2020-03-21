@@ -9,26 +9,33 @@ class MCTS {
 		unordered_map<string, vector<string>> actions; // key = state : values = actions
 		unordered_map<string, vector<float>> stateAction; // key = state_action : values = {visits, sum q values}
 		float expParam;
+		Hex game;
 
-		pair<int, int> singleSearch(Hex game) {
-			if (game.isFinished())
+		pair<int, int> singleSearch() {
+			//cout << game.isFinished() << endl;
+			//cout << "test" << endl;
+
+			if (game.isFinished()) {
+				//cout << "finished " << game.outcome().first << endl;
+				//game.printBoard();
 				return game.outcome();
+			}
 
 			string state = game.getState();
 
 			// Tree search
 			if (stateVisits.find(state) != stateVisits.end())
-				return treeSearch(game, state);
+				return treeSearch(state);
 			
 			
 			// Node expansion
-			nodeExpansion(game, state);
+			nodeExpansion(state);
 
 			//Leaf evaluation
-			pair<string, pair<float, float>> evaluation = rollout(game);			
+			pair<string, pair<float, float>> evaluation = rollout();			
 			string action = evaluation.first;
 			
-			float outcome = (game.getTurn() == 0) ? evaluation.second.first : evaluation.second.second;
+			float outcome = (game.getTurn() == 1) ? evaluation.second.first : evaluation.second.second;
 			
 			//Backpropagation
 			stateVisits[state] += 1;
@@ -36,21 +43,22 @@ class MCTS {
 			return evaluation.second;
 		}
 
-		pair<int, int> treeSearch(Hex game, string state) {
-			string move = selectAction(game, state);
+		pair<int, int> treeSearch(string state) {
+			string move = selectAction(state);
+			//cout << "treeSearch " << state << endl;
 			game.executeMove(move);
-			pair<int, int> outcome = singleSearch(game);
+			pair<int, int> outcome = singleSearch();
 			game.undoMove();
-			int playerOutcome = (game.getTurn() == 0) ? outcome.first : outcome.second;
+			int playerOutcome = (game.getTurn() == 1) ? outcome.first : outcome.second;
 
 			stateVisits[state] += 1;
 			string stateActionName = state + "_" + move;
 			stateAction[stateActionName][0] += 1;
-			stateAction[stateActionName][0] += playerOutcome;
+			stateAction[stateActionName][1] += playerOutcome;
 			return outcome;
 		}
 
-		string selectAction(Hex game, string state) {
+		string selectAction(string state) {
 			float maxVal = NEGINF;
 			string maxAction = "";
 
@@ -66,7 +74,7 @@ class MCTS {
 			return maxAction;
 		}
 
-		void nodeExpansion(Hex game, string state) {
+		void nodeExpansion(string state) {
 			stateVisits[state] = 0;
 			vector<string> legalActions = game.getLegalMoves();
 			actions[state] = legalActions;
@@ -77,18 +85,25 @@ class MCTS {
 			}
 		}
 
-		pair<string, pair<float, float>> rollout(Hex game) {
+		pair<string, pair<float, float>> rollout() {
 			string firstAction = "";
 			int moveCount = 0;
 
-			while (game.isFinished()) {
+			while (!game.isFinished()) {
+				//game.printBoard();
+				//cout << "getting moves "<< endl;
 				vector<string> moves = game.getLegalMoves();
+				//cout << "got moves " << moves.size()<< endl;
 				int actionNum = rand() % moves.size();
 				if (moveCount == 0)
 					firstAction = moves[actionNum];
+				//cout << "rollout " << game.getState()<< endl;
 				game.executeMove(moves[actionNum]);
 				moveCount++;
+				//cout << "executed"<< endl;
 			}
+
+			//cout << "finish rollout " << game.getState()<< endl;
 
 			for (int x = 0; x < moveCount; x++) {
 				game.undoMove();
@@ -97,6 +112,7 @@ class MCTS {
 		}
 
 		static float uct(float c, int parentVisits, vector<float> child) {
+			//cout << child[0] << " " << child[1] << " " << parentVisits << endl;
 			if (child[0] == 0)
 				return NEGINF;
 			float exploration = c * sqrt(log(parentVisits) / child[0]);
@@ -105,8 +121,8 @@ class MCTS {
 		}
 
 	public:
-		MCTS(){
-			cout << "Constructed mcts" << endl;
+		MCTS() : game(5,1) {
+			cout << "Starting" << endl;
 		}
 
 		string getRecommendedMove(string state){
@@ -126,8 +142,11 @@ class MCTS {
 
 		pair<int, vector<vector<float>>> getSearchStatistics(string state) {
 			vector<vector<float>> statistics;
-			for (auto action : actions[state])
+			cout << stateVisits[state] << endl;
+			for (auto action : actions[state]) {
 				statistics.push_back(stateAction[state + "_" + action]);
+				cout << statistics.back()[0] << " " << statistics.back()[1] << endl;
+			}
 			return make_pair(stateVisits[state], statistics);
 		}
 
@@ -135,22 +154,31 @@ class MCTS {
 			expParam = inpExpParam;
 		}
 
-		void search(Hex game, int searchNum) {
+		void setGame(Hex inpGame){
+			game = inpGame;
+		}
+
+		void search(int searchNum) {
 			game.storeState();
 			
 			for (int x = 0; x < searchNum; x++) {
-				singleSearch(game);
+				singleSearch();
 				game.loadState();
 			}
 		}
 };
 
 int main(){
+	// TODO: 
+	// fix some bug somewhere:(
+	// speed up code: use pointers for vectors
 	MCTS treeSearch;
-	Hex game(5, 1);
+	Hex game(4, 1);
 	treeSearch.setExpParam(1.0);
+	treeSearch.setGame(game);
 	auto start = chrono::high_resolution_clock::now();
-	treeSearch.search(game, 90000);
+	treeSearch.search(100000);
 	auto stop = chrono::high_resolution_clock::now();
 	cout << chrono::duration_cast<chrono::microseconds>(stop - start).count() << endl;
+	treeSearch.getSearchStatistics("");
 }

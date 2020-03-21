@@ -42,9 +42,11 @@ class Hex {
 		}
 
 		void executeMove(string move){
+			//cout << "move" << move << endl;
 			state = state + "_" + move;
 			hexBoard.setSquare(stoi(move), getTurn());
 			history.push_back(stoi(move));
+			//cout << "done executing" << endl;
 		}
 
 		void undoMove(){
@@ -89,7 +91,18 @@ class Hex {
 		}
 
 		pair<float, float> outcome(){
-			return ((history.size() + startingPlayer) % 2 ) ? make_pair(-1, 1) : make_pair(1, -1);
+			return ((history.size() + startingPlayer) % 2 ) ? make_pair(-1.0, 1.0) : make_pair(1.0, -1.0);
+		}
+
+		void printBoard(){
+			vector<vector<int>> board = hexBoard.getBoard();
+
+			for (auto row : board){
+				for (auto cell : row) {
+					cout << to_string(cell) << " ";
+				}
+				cout << endl;
+			}
 		}
 };
 /*

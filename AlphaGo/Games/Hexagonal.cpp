@@ -59,19 +59,21 @@ pair<int, int> Hexagonal::border(int position){
 	pair<int, int> borders = make_pair(-1, -1);
 	int x = position / board[0].size();
 	int y = position % board[0].size();
+	//cout << "pos " << position << " " << x << " " << y << endl;
 
 	if (x == 0){
-		borders.first == 1;
+		borders.first = 1;
 	}
 	else if (x == board.size()-1){
-		borders.first == 2;
+		borders.first = 2;
 	}
 	if (y == 0){
-		borders.second == 0;
+		borders.second = 0;
 	}
 	else if (y == board[0].size()-1){
-		borders.second == 3;
+		borders.second = 3;
 	}
+	//cout << "borders " << borders.first << " " << borders.second << endl;
 	return borders;
 }
 

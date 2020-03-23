@@ -101,7 +101,7 @@ Hex::Hex(int boardSize, int inpStartingPlayer) {
 		void Hex::setHexagonal(Hexagonal* inpGame) {
 			hexBoard = inpGame;
 }
-
+/*
 set<string> visited;
 int endPos = 0;
 
@@ -128,9 +128,10 @@ int main(){
 	Hex game(5, 1);
 	game.setHexagonal(&game2OfHex);
 	auto start = chrono::high_resolution_clock::now();
-	dfs(&game, 3);
+	dfs(&game, 4);
 	auto stop = chrono::high_resolution_clock::now();
 	cout << chrono::duration_cast<chrono::microseconds>(stop - start).count() << " " << endPos << endl;
 	system("pause");
 }
 
+*/

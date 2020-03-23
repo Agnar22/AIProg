@@ -174,20 +174,21 @@ class MCTS {
 			}
 		}
 };
-/*
+
 int main(){
 	// TODO: 
 	// fix some bug somewhere:(
 	// speed up code: use pointers for vectors
 	MCTS treeSearch;
 	Hex game(4, 1);
+	Hexagonal game2OfHex(4);
+	game.setHexagonal(&game2OfHex);
 	treeSearch.setExpParam(1.0);
 	treeSearch.setGame(game);
 	auto start = chrono::high_resolution_clock::now();
-	treeSearch.search(300);
+	treeSearch.search(100);
 	auto stop = chrono::high_resolution_clock::now();
 	cout << chrono::duration_cast<chrono::microseconds>(stop - start).count() << endl;
 	treeSearch.getSearchStatistics("");
 	system("pause");
 }
-*/

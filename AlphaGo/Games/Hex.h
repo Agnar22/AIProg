@@ -27,7 +27,7 @@ class Hex {
 
 		void loadState(void);
 
-		vector<string> getLegalMoves(void);
+		vector<string>* getLegalMoves(vector<string>*);
 
 		void executeMove(string);
 

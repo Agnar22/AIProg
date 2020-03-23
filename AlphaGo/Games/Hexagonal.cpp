@@ -11,44 +11,38 @@ void Hexagonal::createBoard(int size){
 	board.assign(size, vector<int> (size, 0));
 }
 vector<vector<int>> Hexagonal::getBoard(){
-	//TODO: make this a return a reference
 	return board;
 }
 void Hexagonal::setBoard(vector<vector<int>> inpBoard){
-	//TODO: make this a return a reference
 	board = inpBoard;
 }
 
-vector<string> Hexagonal::getUnoccupied(){
-	//TODO: make this a return a reference
-	vector<string> unoccupied;
+vector<string>* Hexagonal::getUnoccupied(vector<string>* inpGetUnoccupied){
 	for (int x=0; x < board.size(); x++){
 		for (int y=0; y < board[0].size(); y++){
 			if (board[x][y] == 0){
 				int pos = x * board[0].size() + y;
-				unoccupied.push_back(to_string(pos));
+				(*inpGetUnoccupied).push_back(to_string(pos));
 			}
 		}
 	}
-	return unoccupied;
+	return inpGetUnoccupied;
 }
 
 
-vector<int> Hexagonal::getNeighbours(int pos, int value){
-	//TODO: make this a return a reference
+vector<int>* Hexagonal::getNeighbours(int pos, int value, vector<int>* inpActualNeighbours){
 	int x = pos / board[0].size();
 	int y = pos % board[0].size();
-	vector<int> actualNeighbours;
 	for (int dir = 0; dir < neighbours.size(); dir++){
 		int neigh_x = x + neighbours[dir].first;
 		int neigh_y = y + neighbours[dir].second;
 		if (neigh_x >= 0 && neigh_x < board.size() &&
 			neigh_y >= 0 && neigh_y < board.size() && 
 			board[neigh_x][neigh_y] == value){
-			actualNeighbours.push_back(neigh_x * board[0].size() + neigh_y);
+			(*inpActualNeighbours).push_back(neigh_x * board[0].size() + neigh_y);
 		}
 	}
-	return actualNeighbours;
+	return inpActualNeighbours;
 }
 
 pair<int, int> Hexagonal::border(int position){

@@ -29,8 +29,8 @@ Hex::Hex(int boardSize, int inpStartingPlayer) {
 			history = storeHistory;
 		}
 
-		vector<string> Hex::getLegalMoves(){
-			return hexBoard->getUnoccupied();
+		vector<string>* Hex::getLegalMoves(vector<string>* inpGetLegalMoves){
+			return hexBoard->getUnoccupied(inpGetLegalMoves);
 		}
 
 		void Hex::executeMove(string move){
@@ -67,12 +67,12 @@ Hex::Hex(int boardSize, int inpStartingPlayer) {
 				if (borderSides.second != -1){
 					border[borderSides.second] = true;
 				}
-				vector<int> currNeighbours = hexBoard->getNeighbours(currPos, colour);
+				vector<int>* currNeighbours = hexBoard->getNeighbours(currPos, colour, new vector<int>);
 				
-				for (int x = 0; x < currNeighbours.size(); x++){
-					if (addedNeighbours.find(currNeighbours[x]) == addedNeighbours.end()){
-						neighbours.push_back(currNeighbours[x]);
-						addedNeighbours.insert(currNeighbours[x]);
+				for (int x = 0; x < currNeighbours->size(); x++){
+					if (addedNeighbours.find((*currNeighbours)[x]) == addedNeighbours.end()){
+						neighbours.push_back((*currNeighbours)[x]);
+						addedNeighbours.insert((*currNeighbours)[x]);
 					}
 				}
 				pos++;

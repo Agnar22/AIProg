@@ -67,8 +67,10 @@ class MCTS {
 		string selectAction(string state) {
 			float maxVal = NEGINF;
 			string maxAction = "";
+			//cout << state << " test" << endl;
+			vector<string>* legalMoves = game.getLegalMoves(new vector<string>());
 
-			for (auto action : game.getLegalMoves()) {
+			for (auto action : (*legalMoves)) {
 				float score = MCTS::uct(expParam, stateVisits[state], stateAction[state + "_" + action]);
 				if (score == NEGINF) 
 					return action;
@@ -82,10 +84,10 @@ class MCTS {
 
 		void nodeExpansion(string state) {
 			stateVisits[state] = 0;
-			vector<string> legalActions = game.getLegalMoves();
-			actions[state] = legalActions;
+			vector<string>* legalActions = game.getLegalMoves(new vector<string>());
+			actions[state] = (*legalActions);
 			
-			for (auto action : legalActions) {
+			for (auto action : (*legalActions)) {
 				string stateActionName = state + "_" + action;
 				stateAction[stateActionName] = vector<float> {0, 0};
 			}
@@ -98,13 +100,13 @@ class MCTS {
 			while (!game.isFinished()) {
 				//game.printBoard();
 				//cout << "getting moves "<< endl;
-				vector<string> moves = game.getLegalMoves();
+				vector<string>* moves = game.getLegalMoves(new vector<string>());
 				//cout << "got moves " << moves.size()<< endl;
-				int actionNum = rand() % moves.size();
+				int actionNum = rand() % moves->size();
 				if (moveCount == 0)
-					firstAction = moves[actionNum];
+					firstAction = (*moves)[actionNum];
 				//cout << "rollout " << game.getState()<< endl;
-				game.executeMove(moves[actionNum]);
+				game.executeMove((*moves)[actionNum]);
 				moveCount++;
 				//cout << "executed"<< endl;
 			}
@@ -166,6 +168,7 @@ class MCTS {
 		}
 
 		void search(int searchNum) {
+			//TODO: store and load should not be needed
 			game.storeState();
 			
 			for (int x = 0; x < searchNum; x++) {
@@ -186,7 +189,7 @@ int main(){
 	treeSearch.setExpParam(1.0);
 	treeSearch.setGame(game);
 	auto start = chrono::high_resolution_clock::now();
-	treeSearch.search(100);
+	treeSearch.search(500);
 	auto stop = chrono::high_resolution_clock::now();
 	cout << chrono::duration_cast<chrono::microseconds>(stop - start).count() << endl;
 	treeSearch.getSearchStatistics("");

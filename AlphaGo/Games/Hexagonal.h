@@ -30,9 +30,9 @@ class Hexagonal {
 
 		void setBoard(vector<vector<int>>);
 
-		vector<string> getUnoccupied(void);
+		vector<string>* getUnoccupied(vector<string>*);
 
-		vector<int> getNeighbours(int, int);
+		vector<int>* getNeighbours(int, int, vector<int>*);
 		
 		pair<int, int> border(int);
 

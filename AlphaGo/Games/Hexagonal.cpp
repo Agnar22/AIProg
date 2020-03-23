@@ -82,7 +82,7 @@ int Hexagonal::getSquare(int pos){
 }
 
 
-int Hexagonal::setSquare(int pos, int value){
+void Hexagonal::setSquare(int pos, int value){
 	board[pos / board[0].size()][pos % board[0].size()] = value;
 }
 

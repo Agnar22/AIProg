@@ -1,81 +1,73 @@
-#include "Hexagonal.h"
-
-class Hex {
-
-	private:
-		Hexagonal hexBoard;
-		vector<vector<int>> storeBoard;
-		int startingPlayer;
-		vector<int> history;
-		vector<int> storeHistory;
-		string state;
+#include "Hex.h"
+#include <set>
+#include <chrono>
 
 
-	public:
 
-		Hex(int boardSize, int inpStartingPlayer) : hexBoard(boardSize){
-			//hexBoard(boardSize);
+Hex::Hex(int boardSize, int inpStartingPlayer) {
+			Hexagonal gameOfHex(boardSize);
+			hexBoard = &gameOfHex;
 			startingPlayer = inpStartingPlayer;
 			state = "";
 		}
 
-		string getState(){
+		string Hex::getState(){
 			return state;
 		}
 
-		int getTurn(){
+		int Hex::getTurn() {
 			return (history.size() + startingPlayer + 1) % 2 + 1;
 		}
 
-		void storeState(){
-			storeBoard = hexBoard.getBoard();
+		void Hex::storeState(){
+			storeBoard = hexBoard->getBoard();
 			storeHistory = history;
 		}
 
-		void loadState(){
-			hexBoard.setBoard(storeBoard);
+		void Hex::loadState(){
+			hexBoard->setBoard(storeBoard);
 			history = storeHistory;
 		}
 
-		vector<string> getLegalMoves(){
-			return hexBoard.getUnoccupied();
+		vector<string> Hex::getLegalMoves(){
+			return hexBoard->getUnoccupied();
 		}
 
-		void executeMove(string move){
+		void Hex::executeMove(string move){
 			//cout << "move" << move << endl;
-			state = state + "_" + move;
-			hexBoard.setSquare(stoi(move), getTurn());
+			state += "_" + move;
+			hexBoard->setSquare(stoi(move), getTurn());
 			history.push_back(stoi(move));
 			//cout << "done executing" << endl;
 		}
 
-		void undoMove(){
+		void Hex::undoMove(){
 			int move = history.back();
 			history.pop_back();
-			hexBoard.setSquare(move, 0);
+			hexBoard->setSquare(move, 0);
 			state = state.substr(0, state.length() - to_string(move).length()-1);
 		}	
 		
-		bool isFinished(){
+		bool Hex::isFinished(){
 			if (history.size() == 0){
 				return false;
 			}
 			vector<bool> border = {false, false, false, false};
 			vector<int> neighbours = {history.back()};
 			set<int> addedNeighbours = {history.back()};
-			int colour = hexBoard.getSquare(history.back());
+			int colour = hexBoard->getSquare(history.back());
 			int pos = 0;
 
 			while (pos < neighbours.size()){
 				int currPos = neighbours[pos];
-				pair<int, int> borderSides = hexBoard.border(currPos);
+				pair<int, int> borderSides = hexBoard->border(currPos);
 				if (borderSides.first != -1){
 					border[borderSides.first] = true;
 				}
 				if (borderSides.second != -1){
 					border[borderSides.second] = true;
 				}
-				vector<int> currNeighbours = hexBoard.getNeighbours(currPos, colour);
+				vector<int> currNeighbours = hexBoard->getNeighbours(currPos, colour);
 				
 				for (int x = 0; x < currNeighbours.size(); x++){
 					if (addedNeighbours.find(currNeighbours[x]) == addedNeighbours.end()){
@@ -90,12 +82,13 @@ class Hex {
 			return (wonPlayerOne || wonPlayerTwo) ? true : false;
 		}
 
-		pair<float, float> outcome(){
+		pair<float, float> Hex::outcome(){
+			//cout << "historylength " << history.size()  << " " << startingPlayer << endl;
 			return ((history.size() + startingPlayer) % 2 ) ? make_pair(-1.0, 1.0) : make_pair(1.0, -1.0);
 		}
 
-		void printBoard(){
-			vector<vector<int>> board = hexBoard.getBoard();
+		void Hex::printBoard(){
+			vector<vector<int>> board = hexBoard->getBoard();
 
 			for (auto row : board){
 				for (auto cell : row) {
@@ -104,35 +97,40 @@ class Hex {
 				cout << endl;
 			}
 		}
-};
-/*
+
+		void Hex::setHexagonal(Hexagonal* inpGame) {
+			hexBoard = inpGame;
+}
 
 set<string> visited;
 int endPos = 0;
 
-int dfs(Hex game, int depth){
+int dfs(Hex* game, int depth){
+	//cout << depth << endl;
 	if (depth == 0) {
 		endPos++;
 		return 0;
 	}
-	if (game.isFinished()){
+	if (game->isFinished()){
 		return 0;
 	}
-	vector<string> moves = game.getLegalMoves();
-
+	vector<string> moves = game->getLegalMoves();
+	//cout << moves.size() << endl;
 	for (int x = 0; x < moves.size(); x++){
-		game.executeMove(moves[x]);
+		game->executeMove(moves[x]);
 		dfs(game, depth-1);
-		game.undoMove();
+		game->undoMove();
 	}
 	return 0;
 }
 int main(){
+	Hexagonal game2OfHex(5);
 	Hex game(5, 1);
+	game.setHexagonal(&game2OfHex);
 	auto start = chrono::high_resolution_clock::now();
-	dfs(game, 5);
+	dfs(&game, 3);
 	auto stop = chrono::high_resolution_clock::now();
 	cout << chrono::duration_cast<chrono::microseconds>(stop - start).count() << " " << endPos << endl;
-
+	system("pause");
 }
-*/
+

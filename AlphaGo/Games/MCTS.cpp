@@ -1,6 +1,10 @@
-#include "Hex.cpp"
+#include "Hex.h"
+#include <unordered_map>
+#include <chrono>
+#include <cstdlib>
 
 #define NEGINF -100000
+
 
 class MCTS {
 	private:
@@ -36,6 +40,8 @@ class MCTS {
 			string action = evaluation.first;
 			
 			float outcome = (game.getTurn() == 1) ? evaluation.second.first : evaluation.second.second;
+			//if (outcome > 0)
+			//	cout << endl;
 			
 			//Backpropagation
 			stateVisits[state] += 1;
@@ -102,13 +108,14 @@ class MCTS {
 				moveCount++;
 				//cout << "executed"<< endl;
 			}
-
+			pair<float, float> outcome = game.outcome();
 			//cout << "finish rollout " << game.getState()<< endl;
 
 			for (int x = 0; x < moveCount; x++) {
 				game.undoMove();
 			}
-			return make_pair(firstAction, game.outcome());
+			//cout << moveCount << " " << outcome.first << " " << game.getTurn() << endl;
+			return make_pair(firstAction, outcome);
 		}
 
 		static float uct(float c, int parentVisits, vector<float> child) {
@@ -167,7 +174,7 @@ class MCTS {
 			}
 		}
 };
-
+/*
 int main(){
 	// TODO: 
 	// fix some bug somewhere:(
@@ -177,8 +184,10 @@ int main(){
 	treeSearch.setExpParam(1.0);
 	treeSearch.setGame(game);
 	auto start = chrono::high_resolution_clock::now();
-	treeSearch.search(100000);
+	treeSearch.search(300);
 	auto stop = chrono::high_resolution_clock::now();
 	cout << chrono::duration_cast<chrono::microseconds>(stop - start).count() << endl;
 	treeSearch.getSearchStatistics("");
+	system("pause");
 }
+*/

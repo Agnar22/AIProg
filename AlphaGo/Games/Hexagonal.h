@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include <stdlib.h>
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -38,7 +38,7 @@ class Hexagonal {
 
 		int getSquare(int);
 
-		int setSquare(int, int);
+		void setSquare(int, int);
 };
 
 #endif

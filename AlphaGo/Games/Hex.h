@@ -5,7 +5,7 @@
 class Hex {
 
 	private:
-		Hexagonal hexBoard;
+		Hexagonal* hexBoard;
 		vector<vector<int>> storeBoard;
 		int startingPlayer;
 		vector<int> history;
@@ -16,6 +16,8 @@ class Hex {
 	public:
 
 		Hex(int, int);
+
+		void setHexagonal(Hexagonal* inpGame);
 
 		string getState(void);
 

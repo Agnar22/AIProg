@@ -169,11 +169,11 @@ class MCTS {
 
 		void search(int searchNum) {
 			//TODO: store and load should not be needed
-			game.storeState();
+			//game.storeState();
 			
 			for (int x = 0; x < searchNum; x++) {
 				singleSearch();
-				game.loadState();
+				//game.loadState();
 			}
 		}
 };

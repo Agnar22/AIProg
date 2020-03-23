@@ -18,6 +18,7 @@ void Hexagonal::setBoard(vector<vector<int>> inpBoard){
 }
 
 vector<string>* Hexagonal::getUnoccupied(vector<string>* inpGetUnoccupied){
+	inpGetUnoccupied->reserve(board.size()*board[0].size());
 	for (int x=0; x < board.size(); x++){
 		for (int y=0; y < board[0].size(); y++){
 			if (board[x][y] == 0){
@@ -33,6 +34,7 @@ vector<string>* Hexagonal::getUnoccupied(vector<string>* inpGetUnoccupied){
 vector<int>* Hexagonal::getNeighbours(int pos, int value, vector<int>* inpActualNeighbours){
 	int x = pos / board[0].size();
 	int y = pos % board[0].size();
+	inpActualNeighbours->reserve(neighbours.size());
 	for (int dir = 0; dir < neighbours.size(); dir++){
 		int neigh_x = x + neighbours[dir].first;
 		int neigh_y = y + neighbours[dir].second;
